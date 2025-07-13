@@ -18,13 +18,13 @@ yargs(hideBin(process.argv))
             describe: 'File to add to the staging area',
             type: 'string'
         })
-    }, addRepo)
+    }, (argv) => {addRepo(argv.file)}) // Using an arrow function to pass the file argument to the addRepo function
     .command('commit <message>', 'Commit changes to the repository', (yargs) => {
         yargs.positional('message', {
             describe: 'Commit message',
             type: 'string'
         })
-    }, commitRepo)
+    }, (argv) => {commitRepo(argv.message)}) // Using an arrow function to pass the message argument to the commitRepo
     .command('pull', 'Pull changes from the remote repository', {}, pullRepo)
     .command('push', 'Push changes to the remote repository', {}, pushRepo)
     .command('revert <commitID>', 'Revert to a previous commit', (yargs) => {
