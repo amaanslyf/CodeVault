@@ -1,3 +1,10 @@
+const express = require('express');
+const dotenv = require('dotenv'); // Importing dotenv to load environment variables from .env file
+const cors = require('cors'); // Importing cors for enabling Cross-Origin Resource Sharing which helps in allowing requests from different origins and also for security purposes
+const mongoose = require('mongoose'); // Importing mongoose for MongoDB object modeling
+const bodyParser = require('body-parser'); // Importing body-parser to parse incoming request bodies in a middleware before your handlers, available under the req.body property
+const http = require('http'); // Importing http module to create an HTTP server
+
 const yargs = require('yargs');   // Importing yargs for command-line argument parsing
 const { hideBin } = require('yargs/helpers'); // Hidebin is used to hide the first two arguments (node and script path) and use arguments directly
 
@@ -9,9 +16,12 @@ const {pullRepo} = require('./controllers/pull');
 const { pushRepo } = require('./controllers/push');
 const { revertRepo } = require('./controllers/revert');
 
+dotenv.config(); // Load environment variables from .env file
+
 // Define the command-line interface with their respective commands and parameters
 // Using yargs to create a command-line interface for the version control system
 yargs(hideBin(process.argv))
+.command('start', 'Start the CodeVault server', {},startServer) 
     .command('init', 'Initialize a new repository', {}, initRepo) 
     .command('add <file>', 'Add a file to the repository', (yargs) => {
         yargs.positional('file', {
@@ -32,7 +42,27 @@ yargs(hideBin(process.argv))
             describe: 'ID of the commit to revert to',
             type: 'string'
         })
-    }, revertRepo)
+    }, (argv) => {revertRepo(argv.commitID)}) // Using an arrow function to pass the commitID argument to the revertRepo 
     .demandCommand(1, "You need atleast one command")
     .help().argv;
 
+// Function to start the server
+function startServer() {
+    const app = express();
+    const port = process.env.PORT || 3000; // Use the port from environment variables or default to 3000
+
+    app.use(bodyParser.json()); // Middleware to parse JSON bodies
+    app.use(express.json()); // Middleware to parse JSON bodies
+
+
+    //setting up MongoDB connection
+    const mongoURI = process.env.MONGODB_URI; 
+    mongoose
+    .connect(mongoURI)
+    .then(() => {
+        console.log('MongoDB connected successfully');
+    })
+    .catch((err) => {
+        console.error('MongoDB connection error:', err);
+    });
+}
