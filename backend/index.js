@@ -5,6 +5,7 @@ const mongoose = require('mongoose'); // Importing mongoose for MongoDB object m
 const bodyParser = require('body-parser'); // Importing body-parser to parse incoming request bodies in a middleware before your handlers, available under the req.body property
 const http = require('http'); // Importing http module to create an HTTP server
 const {Server} = require ('socket.io') // this is used to enable real-time communication between the server and clients using WebSockets
+const mainRouter = require('./routes/main.Router'); 
 
 const yargs = require('yargs');   // Importing yargs for command-line argument parsing
 const { hideBin } = require('yargs/helpers'); // Hidebin is used to hide the first two arguments (node and script path) and use arguments directly
@@ -68,11 +69,7 @@ function startServer() {
     });
 
     app.use(cors({origin:'*'})); // Enable CORS so that the server can accept requests from different origins irrespective of the origin of the request
-
-    app.get('/', (req, res) => {
-        res.send('Welcome to CodeVault API'); // A simple route to test the server
-    });
-
+    app.use('/', mainRouter); // Use the main router for API routes
 
     let user="test";
     const httpServer = http.createServer(app); // Create an HTTP server using the Express app
