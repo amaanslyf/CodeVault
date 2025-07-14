@@ -4,6 +4,7 @@ const cors = require('cors'); // Importing cors for enabling Cross-Origin Resour
 const mongoose = require('mongoose'); // Importing mongoose for MongoDB object modeling
 const bodyParser = require('body-parser'); // Importing body-parser to parse incoming request bodies in a middleware before your handlers, available under the req.body property
 const http = require('http'); // Importing http module to create an HTTP server
+const {Server} = require ('socket.io') // this is used to enable real-time communication between the server and clients using WebSockets
 
 const yargs = require('yargs');   // Importing yargs for command-line argument parsing
 const { hideBin } = require('yargs/helpers'); // Hidebin is used to hide the first two arguments (node and script path) and use arguments directly
@@ -64,5 +65,45 @@ function startServer() {
     })
     .catch((err) => {
         console.error('MongoDB connection error:', err);
+    });
+
+    app.use(cors({origin:'*'})); // Enable CORS so that the server can accept requests from different origins irrespective of the origin of the request
+
+    app.get('/', (req, res) => {
+        res.send('Welcome to CodeVault API'); // A simple route to test the server
+    });
+
+
+    let user="test";
+    const httpServer = http.createServer(app); // Create an HTTP server using the Express app
+    const io = new Server(httpServer, {
+        cors: {
+            origin: '*', // Allow all origins for WebSocket connections
+            methods: ['GET', 'POST'] // Allow GET and POST methods
+        }
+    });
+    io.on('connection', (socket) => {               // When a client connects this function is called
+        socket.on('joinRoom', (userID) =>{         // Listen for the 'joinRoom' event from the client
+            const user = socket.id;                 // Get the socket ID of the connected user
+            user=userID;
+            console.log("=====================");
+            console.log(`User ${user} connected`);
+            console.log("=====================");
+            socket.join(userID);                  // Join the user to their specific room
+
+        });
+    });
+    
+const db= mongoose.connection; // Get the MongoDB connection object
+//this is my line of code which starts here
+    db.on('error', console.error.bind(console, 'MongoDB connection error:')); // Log any connection errors
+//this is my line of code which ends here
+    db.once('open', async () => {
+        console.log('Crud operations are ready'); 
+
+        //CRUD operations 
+    });
+    httpServer.listen(port, ()=>{
+        console.log(`Server is running on port ${port}`); 
     });
 }
