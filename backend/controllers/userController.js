@@ -111,7 +111,7 @@ async function getUserProfile(req, res) {
 
 async function updateUserProfile(req, res) {
     const currentId = req.params.id;
-    const { email , password} = req.body;
+    const { email, password } = req.body;
     try {
 
         //establishing connection to MongoDB and selecting the database and collection
@@ -119,11 +119,11 @@ async function updateUserProfile(req, res) {
         const db = client.db('CodeVault');
         const usersCollection = db.collection('users');
 
-        let updateFields={email};
-        if (password){
+        let updateFields = { email };
+        if (password) {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);  // Hash the new password if provided
-            updateFields.password = hashedPassword;  
+            updateFields.password = hashedPassword;
         }
         const result = await usersCollection.findOneAndUpdate(
             { _id: new ObjectId(currentId) },  // Find user by ID
@@ -133,16 +133,16 @@ async function updateUserProfile(req, res) {
         if (!result.value) {
             return res.status(404).json({ message: 'User not found' });
         }
-        res.send(result.value); 
-    }catch (error) {
+        res.send(result.value);
+    } catch (error) {
         console.error('Error updating user profile:', error.message);
         res.status(500).send('Internal server error');
-    }   
+    }
 }
 
 async function deleteUserProfile(req, res) {
     const currentId = req.params.id;
-    try{
+    try {
 
         //establishing connection to MongoDB and selecting the database and collection
         await connectClient();
@@ -154,7 +154,7 @@ async function deleteUserProfile(req, res) {
             return res.status(404).json({ message: 'User not found' });
         }
         res.json({ message: 'User profile deleted successfully' });
-    }catch (error) {
+    } catch (error) {
         console.error('Error deleting user profile:', error.message);
         return res.status(500).send('Internal server error');
     }
