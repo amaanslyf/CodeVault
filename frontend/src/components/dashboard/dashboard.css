@@ -1,0 +1,139 @@
+/* dashboard.css */
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #f1f5f9, #ffffff);
+  color: #111827;
+}
+
+/* Grid Layout */
+#dashboard {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Sidebar & Event Section */
+aside {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+aside:hover {
+  transform: scale(1.015);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+aside h3 {
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+  color: #d3314c;
+}
+
+aside div,
+aside ul {
+  margin-bottom: 14px;
+  background-color: rgba(245, 248, 250, 0.65);
+  border-radius: 12px;
+  padding: 14px;
+  transition: background 0.3s ease;
+}
+
+aside div:hover,
+aside li:hover {
+  background-color: rgba(226, 232, 240, 0.6);
+}
+
+aside h4,
+aside p {
+  margin: 6px 0;
+}
+
+/* Main Section */
+main {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+main:hover {
+  transform: scale(1.01);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+}
+
+main h2 {
+  font-size: 1.6rem;
+  color: #d3314c;
+  margin-bottom: 24px;
+}
+
+/* Search Bar */
+#search {
+  margin-bottom: 20px;
+}
+
+#search input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+#search input:focus {
+  outline: none;
+  border-color: #d3314c;
+  box-shadow: 0 0 0 3px #d3314c44;
+}
+
+/* Repository Cards */
+main div {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+main div:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+main h4 {
+  margin: 8px 0;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Upcoming Events */
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul li {
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background-color: rgba(240, 248, 255, 0.5);
+  transition: background-color 0.3s ease;
+}
+
+ul li:hover {
+  background-color: #dbeafe;
+}

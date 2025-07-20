@@ -1,0 +1,7 @@
+<svg width="196" height="192" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Shield Shape -->
+  <path d="M49 16L30 30V52C30 68 49 78 49 78C49 78 68 68 68 52V30L49 16Z" fill="#d3314cff"/>
+
+  <!-- Code symbol -->
+  <text x="36" y="58" font-family="monospace" font-size="18" fill="#F1F5F9">&lt;/&gt;</text>
+</svg>

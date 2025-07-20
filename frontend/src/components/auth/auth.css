@@ -1,0 +1,185 @@
+/* Overall Page Styling */
+.login-wrapper {
+  color: #f1f6fd;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Asap", sans-serif;
+  background: linear-gradient(135deg, #cfe9ff, #a3c9f8); /* Bluish gradient */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+
+/* Logo Section */
+.login-logo-container {
+  padding: 30px 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-login {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+}
+
+/* Box Container */
+.login-box-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Login Card with Glass Effect */
+.login-box {
+  width: 370px;
+  min-height: 320px;
+  padding: 25px 15px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  transition: all 0.4s ease;
+}
+
+/* Input Fields */
+.input {
+  width: 260px;
+  height: 38px;
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  border-radius: 8px;
+  padding: 0 1rem;
+  font-size: 1rem;
+  color: #111827;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
+}
+
+.input:hover,
+.input:focus {
+  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.6);
+  outline: none;
+}
+
+/* Labels */
+.label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 260px;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #3b82f6, #60a5fa);
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.submit-btn:hover {
+  background: linear-gradient(to right, #2563eb, #3b82f6);
+  cursor: pointer;
+  transform: scale(1.03);
+}
+
+/* Passkey Sign-In Box */
+.passkey-signin {
+  width: 370px;
+  height: 90px;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(219, 234, 254, 0.6);
+  border-radius: 12px;
+  margin: 10px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Links */
+.passkey,
+.signup {
+  color: #2563eb;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.passkey:hover,
+.signup:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Additional Buttons */
+.login-btn,
+.signup-button {
+  width: 260px;
+  height: 38px;
+  background: rgba(144, 238, 144, 0.6);
+  border-radius: 8px;
+  font-weight: 600;
+  color: #1f2937;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(0, 128, 0, 0.1);
+}
+
+.login-btn:hover,
+.signup-button:hover {
+  background: rgba(94, 240, 94, 0.7);
+  transform: scale(1.02);
+}
+
+/* Container for Password Reset / Extra Info */
+.pass-box {
+  width: 370px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  backdrop-filter: blur(4px);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 400px) {
+  .login-box,
+  .pass-box,
+  .passkey-signin {
+    width: 90%;
+  }
+
+  .input,
+  .login-btn,
+  .signup-button {
+    width: 90%;
+  }
+}
