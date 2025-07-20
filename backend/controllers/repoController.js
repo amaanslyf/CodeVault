@@ -20,6 +20,7 @@ async function createRepository(req, res) {
             issues,
         });
         const result = await newRepository.save();
+        await User.findByIdAndUpdate(owner, { $push: { repositories: result._id } }); // Add repository ID to user's repositories array
         res.status(201).json({ message: 'Repository created successfully', repository: result._id });
     } catch (error) {
         console.error('Error creating repository:', error);
@@ -42,6 +43,9 @@ async function fetchRepositoryById(req, res) {
     const { id } = req.params;
     try {
         const repository = await Repository.find({ _id: id }).populate('owner').populate('issues');
+        if (!repository || repository.length === 0) {
+            res.status(404).json({ message: 'Repository not found' });
+        }
         res.json(repository);
     } catch (error) {
         console.error('Error fetching repository:', error);
@@ -53,6 +57,10 @@ async function fetchRepositoryByName(req, res) {
      const { name } = req.params;
      try {
         const repository = await Repository.find({ name }).populate('owner').populate('issues');
+        if (!repository || repository.length === 0) {
+            return res.status(404).json({ message: 'Repository not found' });
+        }
+         // If you want to return a single repository object instead of an array
         res.json(repository);
      }catch (error) {
         console.error('Error fetching repository:', error);
@@ -62,13 +70,15 @@ async function fetchRepositoryByName(req, res) {
 }
 
 async function fetchRepositoriesForCurrentUser(req, res) {
-    const userId= req.user;                                //it gets logged in user ID from the request object stored in req.user
+    const userId= req.params.userId;                                //it gets logged in user ID from the request object stored in req.user
     try {
         const repositories = await Repository.find({ owner: userId });
+        console.log('Fetched repositories for user:', userId, repositories);
         if (!repositories || repositories.length === 0) {
             return res.status(404).json({ message: 'No repositories found for this user' });
         }
         res.json(repositories);
+        
     }catch (error) {
         console.error('Error fetching repositories for user:', error);
         res.status(500).json({ message: 'Internal server error' });
