@@ -4,7 +4,7 @@ body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(to right, #f1f5f9, #ffffff);
-  color: #111827;
+  color: #6685c7;
 }
 
 /* Grid Layout */
@@ -39,7 +39,7 @@ aside h3 {
 aside div,
 aside ul {
   margin-bottom: 14px;
-  background-color: rgba(245, 248, 250, 0.65);
+  background-color: rgb(0, 0, 0);
   border-radius: 12px;
   padding: 14px;
   transition: background 0.3s ease;
@@ -47,7 +47,7 @@ aside ul {
 
 aside div:hover,
 aside li:hover {
-  background-color: rgba(226, 232, 240, 0.6);
+  background-color: rgba(62, 104, 158, 0.6);
 }
 
 aside h4,
@@ -57,7 +57,7 @@ aside p {
 
 /* Main Section */
 main {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(46, 41, 41, 0.6);
   backdrop-filter: blur(14px);
   border-radius: 20px;
   padding: 24px;
