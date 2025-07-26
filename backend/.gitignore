@@ -1,7 +1,7 @@
 # Dependency directories
 # These are installed via 'npm install' and should not be in version control.
 node_modules/
-
+config/
 # Environment variables
 # This file contains sensitive secrets like database passwords and API keys.
 .env
