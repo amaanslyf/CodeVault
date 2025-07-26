@@ -1,38 +1,33 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useAuth } from "../../authContext";
-import { BookIcon } from "@primer/octicons-react";
-import { UnderlineNav } from "@primer/react";
-import Navbar from "../Navbar";
+// --- NEW: Import our centralized API service ---
+import api from "../../api"; 
 import "./CreateRepo.css";
 
 const CreateRepo = () => {
   const navigate = useNavigate();
-  const { auth } = useAuth();
+  // --- MODIFIED: Simplified initial form state ---
+  // We only need the fields the user will actually fill out.
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    visibility: false, // false = private (default), true = public
-    content: '',
-    issues: []
+    visibility: false, // false = private, true = public
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({                  // Spread previous state
+    setFormData(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  // Special handler for boolean visibility
   const handleVisibilityChange = (isPublic) => {
     setFormData(prev => ({
       ...prev,
-      visibility: isPublic // true or false
+      visibility: isPublic
     }));
   };
 
@@ -42,27 +37,17 @@ const CreateRepo = () => {
     setError('');
     
     try {
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
+      // --- MODIFIED: Use the new `api` instance ---
+      // The API call is much cleaner now. The base URL and Authorization header
+      // are handled automatically by our api.js service.
+      // We also no longer send 'owner', 'content', or 'issues' in the body.
+      const response = await api.post('/repo/create', formData);
 
-      const response = await axios.post(
-        'http://localhost:3002/repo/create', 
-        {
-          ...formData,
-          owner: userId,
-          
-        },
-        {
-          headers: {                            // this headers are set to allow CORS and authentication
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem("token")}`
-          }
-        }
-      );
-
-      if (response.data?.repository) {
+      // Navigate to the newly created repository's page
+      if (response.data?.repository?._id) {
+        navigate(`/repo/viewrepo/${response.data.repository._id}`);
+      } else {
+        // Fallback to dashboard if ID is not available for some reason
         navigate("/");
       }
     } catch (err) {
@@ -75,9 +60,6 @@ const CreateRepo = () => {
 
   return (
     <>
-      <Navbar />
-      
-
       <div className="create-repo-wrapper">
         <div className="create-repo-container">
           <h1>Create a new repository</h1>
@@ -85,7 +67,6 @@ const CreateRepo = () => {
           {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleSubmit} className="repo-form">
-            {/* Name field */}
             <div className="form-group">
               <label htmlFor="name">Repository name*</label>
               <input
@@ -99,7 +80,6 @@ const CreateRepo = () => {
               />
             </div>
             
-            {/* Description field */}
             <div className="form-group">
               <label htmlFor="description">Description (optional)</label>
               <input
@@ -112,7 +92,6 @@ const CreateRepo = () => {
               />
             </div>
             
-            {/* Updated Visibility radio buttons (boolean) */}
             <div className="form-group">
               <label>Visibility</label>
               <div className="radio-group">
@@ -137,21 +116,11 @@ const CreateRepo = () => {
               </div>
             </div>
             
-            {/* Content field */}
-            <div className="form-group">
-              <label htmlFor="content">Initial content (optional)</label>
-              <textarea
-                id="content"
-                name="content"
-                value={formData.content}
-                onChange={handleChange}
-                placeholder="You can add initial content for your repository..."
-              />
-            </div>
+            {/* --- REMOVED: The initial content textarea is no longer needed --- */}
             
             <button 
               type="submit" 
-              disabled={isLoading} 
+              disabled={isLoading || !formData.name} // Disable if loading or no name
               className="create-repo-btn"
             >
               {isLoading ? 'Creating repository...' : 'Create repository'}

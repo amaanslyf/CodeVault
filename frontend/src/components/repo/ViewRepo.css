@@ -1,0 +1,138 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #e0eaff, #ffffff);
+  margin: 0;
+  padding: 0;
+}
+
+.repository-details {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  color: #2c3e50;
+  transition: all 0.3s ease-in-out;
+}
+
+.repository-details:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.back-button {
+  background: rgba(0, 136, 255, 0.2);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #004c99;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.back-button:hover {
+  background: rgba(0, 136, 255, 0.35);
+  color: #003366;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #003366;
+}
+
+.description {
+  font-size: 1.1rem;
+  color: #4d4d4d;
+  margin-bottom: 1.5rem;
+}
+
+.metadata {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.metadata span {
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.6);
+}
+
+.content-section,
+.issues-section {
+  margin-top: 2rem;
+}
+
+.content-section h2,
+.issues-section h2 {
+  font-size: 1.4rem;
+  color: #003366;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.content-list,
+.issues-list {
+  list-style: none;
+  padding: 0;
+}
+
+.content-list li,
+.issues-list li {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.content-list li:hover,
+.issues-list li:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.issues-list h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #222;
+}
+
+.issues-list p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.issues-list span {
+  font-size: 0.85rem;
+  display: inline-block;
+  margin-top: 0.3rem;
+  color: #666;
+}
+
+.loading,
+.error,
+.not-found {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #333;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  margin: 2rem auto;
+  max-width: 500px;
+  backdrop-filter: blur(8px);
+}
