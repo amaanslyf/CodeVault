@@ -1,170 +1,147 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { MongoClient } = require('mongodb');
-var ObjectId = require('mongodb').ObjectId;  // Import ObjectId from mongodb to use it for querying
-const dotenv = require('dotenv');
-dotenv.config();
-const uri = process.env.MONGODB_URI;
+const User = require('../models/userModel');
 
-let client;
-async function connectClient() {  // Connect to MongoDB
-    if (!client) {
-        client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true }); // Create a new MongoClient instance where the two parameters means that we are not using any deprecated features
-        await client.connect();
-    }
-}
-
-
+// --- SIGNUP: Create a new user ---
 async function signup(req, res) {
-    const { username, password, email } = req.body;
-    try {
-        //establishing connection to MongoDB and selecting the database and collection
-        await connectClient();
-        const db = client.db('CodeVault');
-        const usersCollection = db.collection('users');
-
-        const user = await usersCollection.findOne({ username });  // Check if user already exists
-        if (user) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
-        const salt = await bcrypt.genSalt(10);  // Generate a salt for hashing
-        const hashedPassword = await bcrypt.hash(password, salt);  // Hash the password with the salt
-        const newUser = {
-            username,
-            password: hashedPassword,
-            email,
-            repositories: [],
-            followedUsers: [],
-            starRepos: []
-        }
-        const result = await usersCollection.insertOne(newUser);  // Insert the new user into the database
-
-        const token = jwt.sign({ id: result.insertedId }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });  // Create a JWT token for the user
-        res.json({ token,userId: result.insertedId });  // Send the token and userId back to the client
-    } catch (error) {
-        console.error('Error during signup:', error.message);
-        res.status(500).send('Internal server error');
+  const { username, password, email } = req.body;
+  try {
+    const userExists = await User.findOne({ $or: [{ email }, { username }] });
+    if (userExists) {
+      return res.status(400).json({ message: 'User with that email or username already exists' });
     }
-
-
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const newUser = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
+    if (newUser) {
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+      res.status(201).json({
+        token,
+        userId: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+      });
+    } else {
+      res.status(400).json({ message: 'Invalid user data' });
+    }
+  } catch (error) {
+    console.error('Error during signup:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 }
 
+// --- LOGIN: Authenticate a user ---
 async function login(req, res) {
-    const { email, password } = req.body;
-    try {
-        //establishing connection to MongoDB and selecting the database and collection
-        await connectClient();
-        const db = client.db('CodeVault');
-        const usersCollection = db.collection('users');
-
-        const user = await usersCollection.findOne({ email });  // Check if user already exists
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid credentials' });
-        }
-        const isMatch = await bcrypt.compare(password, user.password);  // Compare the password with the hashed password
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credentials' });
-        }
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });  // Create a JWT token for the user
-        res.json({ token, userId: user._id });
-    } catch (error) {
-        console.error('Error during login:', error.message);
-        res.status(500).send('Internal server error');
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+      res.json({
+        token,
+        userId: user._id,
+        username: user.username,
+        email: user.email,
+      });
+    } else {
+      res.status(401).json({ message: 'Invalid email or password' });
     }
+  } catch (error) {
+    console.error('Error during login:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 }
 
+// --- GET ALL USERS: Fetch all users ---
 async function getAllUsers(req, res) {
-    try {
-        //establishing connection to MongoDB and selecting the database and collection
-        await connectClient();
-        const db = client.db('CodeVault');
-        const usersCollection = db.collection('users');
-
-        const users = await usersCollection.find({}).toArray();  // Fetch all users from the database and toArray() is used as we are fetching multiple users (documents)
-        res.json(users);
-
-    } catch (error) {
-        console.error('Error fetching users:', error.message);
-        res.status(500).send('Internal server error');
-    }
+  try {
+    const users = await User.find({}).select('-password');
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 }
 
+// --- GET USER PROFILE: Fetch a single user profile ---
 async function getUserProfile(req, res) {
-    const currentId = req.params.id;
-    try {
-        //establishing connection to MongoDB and selecting the database and collection
-        await connectClient();
-        const db = client.db('CodeVault');
-        const usersCollection = db.collection('users');
-
-        const user = await usersCollection.findOne({ _id: new ObjectId(currentId) });  // Fetch user by ID
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.send(user);
-    } catch (error) {
-        console.error('Error fetching user profile:', error.message);
-        res.status(500).send('Internal server error');
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id).select('-password').populate('repositories');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user profile:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 }
 
+// --- UPDATE USER PROFILE: Update a user's password ---
 async function updateUserProfile(req, res) {
-    const currentId = req.params.id;
-    const { email, password } = req.body;
-    try {
+  // --- NEW: Authorization Check ---
+  // Verify that the logged-in user's ID (from the token) matches the ID in the URL.
+  // This prevents a logged-in user from changing another user's password.
+  if (req.user._id.toString() !== req.params.id) {
+    return res.status(403).json({ message: 'Forbidden: You can only update your own profile.' });
+  }
 
-        //establishing connection to MongoDB and selecting the database and collection
-        await connectClient();
-        const db = client.db('CodeVault');
-        const usersCollection = db.collection('users');
-
-        let updateFields = { email };
-        if (password) {
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);  // Hash the new password if provided
-            updateFields.password = hashedPassword;
-        }
-        const result = await usersCollection.findOneAndUpdate(
-            { _id: new ObjectId(currentId) },  // Find user by ID
-            { $set: updateFields },  // Update the email field
-            { returnDocument: 'after' }  // Return the updated document
-        );
-        if (!result.value) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.send(result.value);
-    } catch (error) {
-        console.error('Error updating user profile:', error.message);
-        res.status(500).send('Internal server error');
+  const { id } = req.params;
+  const { password } = req.body;
+  if (!password || password.length < 6) {
+    return res.status(400).json({ message: 'Password is required and must be at least 6 characters' });
+  }
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { password: hashedPassword },
+      { new: true }
+    );
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
     }
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error updating password:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 }
 
+// --- DELETE USER PROFILE: Delete a user ---
 async function deleteUserProfile(req, res) {
-    const currentId = req.params.id;
-    try {
+  // --- NEW: Authorization Check ---
+  // Verify that the logged-in user's ID (from the token) matches the ID in the URL.
+  // This prevents a logged-in user from deleting another user's account.
+  if (req.user._id.toString() !== req.params.id) {
+    return res.status(403).json({ message: 'Forbidden: You can only delete your own profile.' });
+  }
 
-        //establishing connection to MongoDB and selecting the database and collection
-        await connectClient();
-        const db = client.db('CodeVault');
-        const usersCollection = db.collection('users');
-
-        const result = await usersCollection.deleteOne({ _id: new ObjectId(currentId) });  // Delete user by ID
-        if (result.deletedCount === 0) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.json({ message: 'User profile deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting user profile:', error.message);
-        return res.status(500).send('Internal server error');
+  const { id } = req.params;
+  try {
+    const deletedUser = await User.findByIdAndDelete(id);
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found' });
     }
+    // Consider also deleting user's repositories here.
+    res.json({ message: 'User profile deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user profile:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 }
 
 module.exports = {
-    getAllUsers,
-    signup,
-    login,
-    getUserProfile,
-    updateUserProfile,
-    deleteUserProfile
+  signup,
+  login,
+  getAllUsers,
+  getUserProfile,
+  updateUserProfile,
+  deleteUserProfile,
 };
