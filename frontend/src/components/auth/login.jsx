@@ -1,45 +1,34 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../../api"; // --- USE API SERVICE ---
 import { useAuth } from "../../authContext";
-
-import { Heading, Box, Button } from "@primer/react";  
+import { Heading, Box, Button } from "@primer/react";
 import "./auth.css";
-
 import logo from "../../assets/codevault-icon.svg";
 import { Link } from "react-router-dom";
 
 const Login = () => {
-  // useEffect(() => {             // Uncomment this if you want to clear localStorage on logout    
-  //   localStorage.removeItem("token");
-  //   localStorage.removeItem("userId");
-  //   setCurrentUser(null);
-  // });
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { setCurrentUser } = useAuth();
+  const navigate = useNavigate(); // Use navigate hook for redirection
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
-      setLoading(true);
-      const res = await axios.post("http://localhost:3002/login", {
-        email: email,
-        password: password,
-      });
+      // --- API CALL IS NOW CLEANER ---
+      const res = await api.post("/login", { email, password });
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userId", res.data.userId);
-
       setCurrentUser(res.data.userId);
       setLoading(false);
-
-      window.location.href = "/";
+      navigate("/"); // --- USE NAVIGATE FOR REDIRECTION ---
     } catch (err) {
       console.error(err);
-      alert("Login Failed!");
+      alert(err.response?.data?.message || "Login Failed!");
       setLoading(false);
     }
   };
@@ -49,52 +38,50 @@ const Login = () => {
       <div className="login-logo-container">
         <img className="logo-login" src={logo} alt="Logo" />
       </div>
-
       <div className="login-box-wrapper">
         <div className="login-heading">
           <Box sx={{ padding: 1 }}>
-            <Heading as="h1" sx={{ fontSize: 4, mb: 3 }}>Sign In</Heading>  {/* Replaced PageHeader with Heading */}
+            <Heading as="h1" sx={{ fontSize: 4, mb: 3 }}>Sign In</Heading>
           </Box>
         </div>
         <div className="login-box">
-          <div>
-            <label className="label">Email address</label>
-            <input
-              autoComplete="off"
-              name="Email"
-              id="Email"
-              className="input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="div">
-            <label className="label">Password</label>
-            <input
-              autoComplete="off"
-              name="Password"
-              id="Password"
-              className="input"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-
-          <Button
-            variant="primary"
-            className="login-btn"
-            disabled={loading}
-            onClick={handleLogin}
-          >
-            {loading ? "Loading..." : "Login"}
-          </Button>
+          <form onSubmit={handleLogin}>
+            <div>
+              <label className="label">Email address</label>
+              <input
+                autoComplete="off"
+                name="Email"
+                className="input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="label">Password</label>
+              <input
+                autoComplete="off"
+                name="Password"
+                className="input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button
+              variant="primary"
+              className="login-btn"
+              disabled={loading}
+              type="submit"
+            >
+              {loading ? "Loading..." : "Login"}
+            </Button>
+          </form>
         </div>
         <div className="pass-box">
-          <p>
-            New to CodeVault? <Link to="/signup">Create an account</Link>
-          </p>
+          <p>New to CodeVault? <Link to="/signup">Create an account</Link></p>
         </div>
       </div>
     </div>
