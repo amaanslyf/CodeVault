@@ -1,57 +1,37 @@
-import React,{useEffect} from 'react';
-import {useNavigate,useRoutes} from 'react-router-dom';
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './authContext';
+import Layout from './Layout';
+import Login from './components/auth/Login';
+import Signup from './components/auth/Signup';
+import Dashboard from './components/dashboard/Dashboard';
+import CreateRepo from './components/repo/CreateRepo';
+import ViewRepo from './components/repo/ViewRepo';
+import Profile from './components/user/Profile';
 
-//Auth Context
-import { useAuth } from './authContext.jsx';
+const ProtectedRoute = ({ children }) => {
+  const { currentUser } = useAuth();
+  return currentUser ? children : <Navigate to="/auth" />;
+};
 
-//Pages List
-import Dashboard from "./components/dashboard/Dashboard.jsx";
-import Profile from "./components/user/Profile.jsx";
-import Login from "./components/auth/Login.jsx";
-import Signup from "./components/auth/Signup.jsx";
-import CreateRepo from "./components/repo/CreateRepo.jsx";
-
-
+// --- MODIFIED: Renamed to ProjectRoutes and removed BrowserRouter ---
 const ProjectRoutes = () => {
-    const {currentUser, setCurrentUser} = useAuth();
-    const navigate = useNavigate();
+  return (
+    // The <BrowserRouter> wrapper has been removed from this file.
+    <Routes>
+      <Route path="/auth" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-    useEffect(() => {
-        const userIdfromStorage = localStorage.getItem('userId');
-         if (userIdfromStorage && !currentUser) {   // if userId exists in localStorage and currentUser is not set then set it
-            setCurrentUser(userIdfromStorage);
-        }
-        if (!userIdfromStorage && !["/auth","/signup"].includes(window.location.pathname)) {
-            navigate("/auth");  //if userId does not exist in localStorage and current path is not auth or signup, redirect to auth page
-        }
+      <Route element={<Layout />}>
+        <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/createrepo" element={<ProtectedRoute><CreateRepo /></ProtectedRoute>} />
+        <Route path="/repo/viewrepo/:id" element={<ProtectedRoute><ViewRepo /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      </Route>
 
-        if (userIdfromStorage && window.location.pathname === "/auth") {
-            navigate("/");  //if userId exists in localStorage and current path is auth, redirect to home page
-        }
-    },[currentUser, setCurrentUser, navigate]); //this dependency array ensures the effect runs when currentUser changes
-    let element = useRoutes([
-        {
-            path: "/",
-            element: <Dashboard />
-        },
-        {
-            path:"/auth",
-            element: <Login />
-        },
-        {
-            path:"/signup",
-            element: <Signup />
-        },
-        {
-            path:"/profile",
-            element: <Profile />
-        },
-        {
-            path:"/createrepo",
-            element: <CreateRepo />
-        }
-    ]);
-    return element;
-}
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
+};
 
-export default ProjectRoutes;            
+export default ProjectRoutes; // Export as default
