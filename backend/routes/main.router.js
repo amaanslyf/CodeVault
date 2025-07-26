@@ -1,5 +1,5 @@
 const express = require('express'); 
-const userRouter=require('./user.Router'); 
+const userRouter=require('./user.router'); 
 const repoRouter=require('./repo.router');
 const issueRouter=require('./issue.router'); 
 
