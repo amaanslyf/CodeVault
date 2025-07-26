@@ -1,166 +1,105 @@
-/* Base Wrapper */
+/* profile.css */
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #dbe4e7, #77929b, #cfdbe0);
+  color: #ffffff;
+}
+
 .profile-page-wrapper {
   display: flex;
-  min-height: 100vh;
-  color: #1c1c1c;
-  background: linear-gradient(to right, #f5fbff, #e7f0fa); /* Lighter blue gradient */
-  width: 100%;
-}
-
-/* Sidebar */
-.user-profile-section {
-  width: 260px;
-  display: flex;
-  flex-direction: column;
-  padding: 40px 15px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-  border-right: 1px solid #dce6f0;
-}
-
-/* Avatar */
-.profile-image {
-  margin: 10px auto;
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background-color: #ccc;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.profile-image:hover {
-  transform: scale(1.05);
-}
-
-/* Name Styling */
-.user-name {
-  margin: 10px auto;
-  font-size: 1.2em;
-  font-weight: 600;
-}
-
-/* Follow Button */
-.follow-btn {
-  background: linear-gradient(to right, #7fb8ff, #b1d4ff);
-  color: white;
-  width: 100%;
-  margin: 10px auto;
-  height: 42px;
-  border-radius: 8px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
-}
-
-.follow-btn:hover {
-  background: linear-gradient(to right, #66a7f7, #9bcaff);
-  transform: scale(1.03);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Follower/Following */
-.follower {
-  display: flex;
   justify-content: center;
-  gap: 10px;
-  margin: 15px auto;
-  font-size: 14px;
-  color: #333;
-}
-
-/* Repo List */
-.user-repo-section {
-  margin: 0px auto;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-/* Repo Cards Wrapper */
-.repo-card-wrapper {
-  margin: 0 auto;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 20px;
   padding: 40px 20px;
 }
 
-/* Individual Repo Card */
-.repo {
-  background-color: white;
-  border: 1px solid #d3e0f0;
-  border-radius: 12px;
-  width: 400px;
-  height: 210px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.2s, box-shadow 0.3s;
-  cursor: pointer;
-  backdrop-filter: blur(4px);
+.user-profile-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 30px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.repo:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+.profile-image {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #6dd5ed, #2193b0);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
-/* Repo Name Link */
-.repo-name {
-  font-size: 20px;
-  color: #408ced;
-  font-weight: bold;
-  transition: color 0.2s ease;
+.name {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-.repo-name:hover {
-  color: #1d6ed7;
-  text-decoration: underline;
+.name h3 {
+  margin: 10px 0 5px;
+  font-size: 24px;
+  color: #ffffff;
 }
 
-/* Description */
-.description {
-  color: #555;
-  font-size: 14px;
+.name p {
+  margin: 0;
+  font-size: 16px;
+  color: #ccc;
 }
 
-/* Logout */
-#logout {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 12px 20px;
+form input[type="password"] {
+  width: 100%;
+  padding: 10px 15px;
+  margin-bottom: 15px;
   border-radius: 8px;
-  font-weight: bold;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  outline: none;
+  transition: background 0.3s ease;
+}
+
+form input[type="password"]:focus {
+  background: rgba(214, 202, 202, 0.25);
+}
+
+button {
+  width: 100%;
+  padding: 12px 20px;
+  margin-top: 10px;
+  font-size: 16px;
+  color: white;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, background 0.3s ease;
+  transition: 0.3s ease;
 }
 
-#logout:hover {
-  transform: scale(1.05);
-  background-color: #d9362a;
-  border: 1px solid white;
+button:hover {
+  opacity: 0.85;
+  transform: scale(1.02);
 }
 
-/* Responsive Tweaks */
-@media screen and (max-width: 750px) {
-  .repo {
-    width: 100%;
-  }
+.edit-btn {
+  background: linear-gradient(to right, #00c9ff, #92fe9d);
 }
 
-@media screen and (max-width: 570px) {
-  .user-profile-section {
-    margin: auto;
-  }
+.logout-btn {
+  background: linear-gradient(to right, #f7971e, #ffd200);
+  color: #333;
+}
 
-  .profile-page-wrapper {
-    display: block;
-  }
+.delete-btn {
+  background: linear-gradient(to right, #e53935, #e35d5b);
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 14px;
+  margin: 5px 0 10px;
+  text-align: center;
 }
