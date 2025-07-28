@@ -1,105 +1,70 @@
-/* profile.css */
+/* frontend/src/components/user/profile.css (REPLACE FULL FILE) */
 
-body {
-  margin: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to right, #dbe4e7, #77929b, #cfdbe0);
-  color: #ffffff;
-}
-
+/* Main page wrapper, leverages page-container from index.css */
 .profile-page-wrapper {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+/* Main profile card, leverages .card from index.css */
+.user-profile-card {
+  /* Inherits padding, border, shadow from .card */
+}
+
+.user-profile-card h3 {
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-primary);
+  padding-bottom: 15px;
+}
+
+.profile-info p {
+  font-size: 1.1em;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.profile-actions h4, .danger-zone h4 {
+  font-size: 1.2em;
+  margin-top: 20px; /* Adjust spacing as needed */
+  margin-bottom: 10px;
+  color: var(--color-text-primary);
+}
+
+.password-form {
   display: flex;
-  justify-content: center;
-  padding: 40px 20px;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
 }
 
-.user-profile-section {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 30px;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
+/* input fields now use .input-field from index.css */
 
-.profile-image {
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(135deg, #6dd5ed, #2193b0);
-  border-radius: 50%;
-  margin: 0 auto 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-}
-
-.name {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.name h3 {
-  margin: 10px 0 5px;
-  font-size: 24px;
-  color: #ffffff;
-}
-
-.name p {
-  margin: 0;
-  font-size: 16px;
-  color: #ccc;
-}
-
-form input[type="password"] {
-  width: 100%;
-  padding: 10px 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  border: none;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  outline: none;
-  transition: background 0.3s ease;
-}
-
-form input[type="password"]:focus {
-  background: rgba(214, 202, 202, 0.25);
-}
-
-button {
-  width: 100%;
-  padding: 12px 20px;
+.form-buttons {
+  display: flex;
+  gap: 10px;
   margin-top: 10px;
-  font-size: 16px;
-  color: white;
-  background: linear-gradient(to right, #6a11cb, #2575fc);
+}
+
+/* action-button styles are now handled by .button-primary, .button-danger, .button-secondary */
+/* .action-button {} */ 
+/* .update-btn {} */ 
+/* .cancel-btn {} */ 
+
+.danger-zone {
+  /* Inherits .card styles from index.css */
+  border: 1px solid var(--color-danger); /* Override border for danger zone */
+  padding: 20px; /* Ensure consistent padding */
+}
+
+/* global hr is now .divider */
+hr.divider {
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s ease;
+  border-top: 1px solid var(--color-border-primary);
+  margin: 24px 0;
 }
 
-button:hover {
-  opacity: 0.85;
-  transform: scale(1.02);
-}
-
-.edit-btn {
-  background: linear-gradient(to right, #00c9ff, #92fe9d);
-}
-
-.logout-btn {
-  background: linear-gradient(to right, #f7971e, #ffd200);
-  color: #333;
-}
-
-.delete-btn {
-  background: linear-gradient(to right, #e53935, #e35d5b);
-}
-
-.error-message {
-  color: #ff4d4d;
-  font-size: 14px;
-  margin: 5px 0 10px;
-  text-align: center;
-}
+/* global error-message is used */
+/* .error-message {} */
