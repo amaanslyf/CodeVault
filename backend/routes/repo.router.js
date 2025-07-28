@@ -13,6 +13,7 @@ const upload = multer({ storage: storage });
 
 // ... (keep your public and protected routes)
 repoRouter.get('/repo/all', repoController.getAllRepositories);
+repoRouter.get('/repo/public', authMiddleware, repoController.getPublicRepositories);
 repoRouter.get('/repo/viewrepo/:id', repoController.fetchRepositoryById);
 repoRouter.get('/repo/name/:name', repoController.fetchRepositoryByName);
 repoRouter.post('/repo/create', authMiddleware, repoController.createRepository);
