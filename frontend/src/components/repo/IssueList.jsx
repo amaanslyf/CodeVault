@@ -1,25 +1,25 @@
-import React from 'react';
-import './IssueList.css';
+// frontend/src/components/repo/IssueList.jsx (REPLACE FULL FILE)
 
-const IssueList = ({ issues }) => {
+import React from 'react';
+import IssueItem from './IssueItem'; // Import the new component
+import './IssueList.css'; // Keep the list-level styles
+
+
+const IssueList = ({ issues, onIssueUpdate, onIssueDelete }) => {
   if (!issues || issues.length === 0) {
-    return <p>No issues have been created for this repository yet.</p>;
+    // MODIFIED: Use the global empty-state-message class
+    return <p className="empty-state-message">No issues have been created for this repository yet.</p>;
   }
 
   return (
     <ul className="issue-list">
       {issues.map((issue) => (
-        <li key={issue._id} className="issue-item">
-          <div className="issue-status-icon">
-            {issue.status === 'open' ? '🟢' : '⚪️'}
-          </div>
-          <div className="issue-details">
-            <span className="issue-title">{issue.title}</span>
-            <p className="issue-meta">
-              #{issue._id.substring(0, 6)} opened on {new Date(issue.createdAt).toLocaleDateString()} by {issue.author?.username || 'Unknown'}
-            </p>
-          </div>
-        </li>
+        <IssueItem
+          key={issue._id}
+          issue={issue}
+          onIssueUpdate={onIssueUpdate}
+          onIssueDelete={onIssueDelete}
+        />
       ))}
     </ul>
   );

@@ -1,63 +1,21 @@
-/* Styling for the main issue list container */
+/* frontend/src/components/repo/IssueList.css (REPLACE FULL FILE) */
+
 .issue-list {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
-  margin: 0;
-  border: 1px solid rgba(200, 200, 200, 0.4);
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-border-primary); /* Use global border */
+  border-radius: var(--border-radius); /* Use global border-radius */
+  margin-top: 20px; /* Space from CreateIssue form */
 }
 
-/* Styling for each individual issue item */
-.issue-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 1.25rem;
-  gap: 0.75rem;
-  border-bottom: 1px solid rgba(225, 228, 232, 0.6);
-  transition: background-color 0.3s ease;
-}
-
-.issue-item:last-child {
-  border-bottom: none;
-}
-
-.issue-item:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(12px);
-}
-
-/* Status icon (green circle) */
-.issue-status-icon {
-  font-size: 1.2rem;
-  line-height: 1.5;
-  color: #28a745; /* Brighter green */
-}
-
-/* Container for the title and metadata */
-.issue-details {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Issue title styling */
-.issue-title {
-  font-weight: 600;
-  color: #1c1e21;
-  cursor: pointer;
-  line-height: 1.5;
-  transition: color 0.3s ease;
-}
-
-.issue-title:hover {
-  color: #0078d7;
-}
-
-/* Metadata (issue number, user, etc.) */
-.issue-meta {
-  font-size: 0.8rem;
-  color: #5f6368;
-  margin-top: 4px;
+/* For empty state messages */
+.empty-state-message {
+  text-align: center;
+  padding: 20px;
+  color: var(--color-text-secondary);
+  font-size: 0.95em;
+  background-color: var(--color-bg-secondary);
+  border: 1px dashed var(--color-border-secondary);
+  border-radius: var(--border-radius);
+  margin-top: 20px; /* Space from CreateIssue form */
 }
