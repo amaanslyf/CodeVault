@@ -1,122 +1,136 @@
-/* Global Styles */
+/* --- CODEVAULT GLOBAL STYLES --- */
+
+/* 1. Import a Professional Font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* 2. Define a Global Color Palette and Variables */
+:root {
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  
+  --color-primary: #2ea44f; /* Green for buttons and actions */
+  --color-primary-hover: #2c974b;
+  --color-danger: #d73a49; /* Red for delete buttons */
+  --color-danger-hover: #cb2431;
+
+  --color-text-primary: #24292e; /* Dark gray for main text */
+  --color-text-secondary: #586069; /* Lighter gray for secondary text/meta */
+  --color-text-link: #0366d6;
+  
+  --color-bg-primary: #ffffff;   /* White main background */
+  --color-bg-secondary: #f6f8fa; /* Light gray for sidebars, cards */
+  
+  --color-border-primary: #e1e4e8;
+  --color-border-secondary: #d1d5da;
+  
+  --border-radius: 6px;
+  --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* 3. Global CSS Reset and Base Styles */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to right, #e0f2fe, #f8fafc);
-  color: #0f172a;
-  min-height: 100vh;
-  overflow-x: hidden;
+  font-family: var(--font-main);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
 }
 
-/* Navbar Container */
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(90deg, #3b82f6, #1e293b);
-  padding: 1rem 2rem;
-  border-bottom: 2px solid #94a3b8;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(4px);
+a {
+  color: var(--color-text-link);
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
-/* Logo Section */
-nav > a > div {
-  display: flex;
-  align-items: center;
+a:hover {
+  text-decoration: underline;
+}
+
+/* 4. Utility Classes for Reusable Components */
+
+/* Main layout wrapper for pages */
+.page-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Consistent card styling */
+.card {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--box-shadow);
+}
+
+/* Primary action button */
+.button-primary {
+  display: inline-block;
+  padding: 10px 18px;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--color-primary);
+  border: 1px solid rgba(27, 31, 35, 0.15);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button-primary:hover {
+  background-color: var(--color-primary-hover);
   text-decoration: none;
 }
 
-/* Logo Image */
-nav img {
-  height: 50px;
-  width: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #94a3b8;
-  transition: transform 0.3s ease;
+/* Danger action button */
+.button-danger {
+  display: inline-block;
+  padding: 10px 18px;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--color-danger);
+  border: 1px solid rgba(27, 31, 35, 0.15);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-nav img:hover {
-  transform: scale(1.05);
+.button-danger:hover {
+  background-color: var(--color-danger-hover);
+  text-decoration: none;
 }
 
-/* Welcome Text */
-nav h3 {
-  margin-left: 15px;
-  color: #f1f5f9;
+/* Standard form input field */
+.input-field {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  background-color: #fff;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field:focus {
+  border-color: var(--color-text-link);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+}
+
+/* General loading and error message styles */
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: 2rem;
   font-size: 1.2rem;
-  font-weight: 600;
-  transition: color 0.3s ease, text-shadow 0.3s ease;
+  color: var(--color-text-secondary);
 }
 
-nav h3:hover {
-  text-decoration: underline;
-  color: #38bdf8;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
-  cursor: pointer;
-}
-
-/* Navigation Links Container */
-nav > div {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-/* Individual Link Styling */
-nav p.link {
-  font-weight: 600;
-  color: #f1f5f9;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(4px);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-  border: 1px solid transparent;
-}
-
-/* Hover Effects - Aero Style */
-nav p.link:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #38bdf8;
-  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
-  transform: translateY(-1px);
-  cursor: pointer;
-  border-color: #94a3b8;
-}
-
-/* Active/Pressed State */
-nav p.link:active {
-  transform: translateY(1px);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Responsive (Mobile) */
-@media screen and (max-width: 768px) {
-  nav {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  nav > div {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8rem;
-  }
-
-  nav h3 {
-    font-size: 1rem;
-  }
-
-  nav p.link {
-    font-size: 0.9rem;
-  }
+.error-message {
+  color: var(--color-danger);
 }
