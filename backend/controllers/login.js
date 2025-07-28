@@ -1,42 +1,47 @@
+const axios = require('axios');
+const inquirer = require('inquirer');
 const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
-const axios = require('axios');
-const inquirer = require('inquirer'); // A library for interactive command-line prompts
+const dotenv = require('dotenv');
 
-// Path to a global config file in the user's home directory
-const CONFIG_DIR = path.join(os.homedir(), '.codevault');
-const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
+// Load environment variables from the root .env file
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-// This function will handle the login process
+// Construct the server URL dynamically
+const API_URL = `http://localhost:${process.env.PORT || 3000}`;
+
+// --- FIX: The function is named 'loginUser' ---
 async function loginUser() {
   try {
-    // 1. Use inquirer to prompt for email and password securely
-    const credentials = await inquirer.prompt([
+    const answers = await inquirer.prompt([
       { type: 'input', name: 'email', message: 'Enter your CodeVault email:' },
       { type: 'password', name: 'password', message: 'Enter your password:', mask: '*' },
     ]);
 
-    // 2. Make an API call to your backend's login endpoint
-    const response = await axios.post('http://localhost:3002/login', {
-      email: credentials.email,
-      password: credentials.password,
+    // Use the dynamic API_URL
+    const response = await axios.post(`${API_URL}/login`, {
+      email: answers.email,
+      password: answers.password,
     });
 
-    const { token } = response.data;
-    if (!token) {
-      console.error('Login failed. No token received.');
-      return;
-    }
-
-    // 3. Save the token to the global config file
-    await fs.mkdir(CONFIG_DIR, { recursive: true });
-    await fs.writeFile(CONFIG_FILE, JSON.stringify({ token }));
+    const configDir = path.join(os.homedir(), '.codevault');
+    await fs.mkdir(configDir, { recursive: true });
+    const configPath = path.join(configDir, 'config.json');
+    const config = { token: response.data.token, userId: response.data.userId };
+    await fs.writeFile(configPath, JSON.stringify(config, null, 2));
 
     console.log('✅ Login successful. Your authentication token has been saved.');
   } catch (error) {
-    console.error('Login failed:', error.response?.data?.message || error.message);
+    if (error.response) {
+      console.error(`Login failed: ${error.response.data.message}`);
+    } else if (error.request) {
+      console.error(`Login failed: Cannot connect to the CodeVault server at ${API_URL}. Is it running?`);
+    } else {
+      console.error('Login failed:', error.message);
+    }
   }
 }
 
+// --- FIX: The module exports the function named 'loginUser' ---
 module.exports = { loginUser };
