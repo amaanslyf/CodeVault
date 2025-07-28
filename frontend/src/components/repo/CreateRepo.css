@@ -1,129 +1,144 @@
-/* General wrapper */
+/* frontend/src/components/repo/CreateRepo.css (REPLACE FULL FILE) */
+
 .create-repo-wrapper {
   display: flex;
   justify-content: center;
   padding: 40px 20px;
-  background: linear-gradient(120deg, #e6f0ff 0%, #ffffff 100%);
-  min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f6f8fa; /* Light background for the page */
 }
 
-/* Glassmorphism style */
 .create-repo-container {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  padding: 32px;
+  background-color: #ffffff;
+  border: 1px solid #d1d5da;
+  border-radius: 6px;
+  padding: 30px;
   max-width: 600px;
   width: 100%;
-  transition: transform 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.create-repo-container:hover {
-  transform: scale(1.01);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .create-repo-container h1 {
-  font-size: 24px;
-  margin-bottom: 24px;
-  color: #003366;
+  font-size: 1.8em;
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: #24292e;
+  text-align: center;
+  border-bottom: 1px solid #e1e4e8;
+  padding-bottom: 15px;
 }
 
-/* Form style */
-.repo-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group {
+.repo-form .form-group {
   margin-bottom: 20px;
 }
 
-.form-group label {
-  font-weight: 600;
-  color: #003366;
-  margin-bottom: 8px;
+.repo-form label {
   display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #24292e;
+  font-size: 0.95em;
 }
 
-input[type="text"],
-textarea {
+.repo-form input[type="text"],
+.repo-form textarea {
   width: 100%;
-  padding: 10px 14px;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(6px);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  padding: 10px 12px;
+  border: 1px solid #d1d5da;
+  border-radius: 6px;
+  box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+  font-size: 1em;
+  color: #24292e;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-input[type="text"]:focus,
-textarea:focus {
+.repo-form input[type="text"]:focus,
+.repo-form textarea:focus {
+  border-color: #0366d6;
+  box-shadow: 0 0 0 3px rgba(3,102,214,0.3);
   outline: none;
-  border-color: #3399ff;
-  box-shadow: 0 0 6px rgba(51, 153, 255, 0.5);
 }
 
-textarea {
-  resize: vertical;
-  min-height: 100px;
+/* Validation Feedback Styles */
+.repo-form .input-error {
+  border-color: #cb2431; /* Red border for error */
 }
 
-/* Radio buttons */
+.repo-form .input-error:focus {
+  box-shadow: 0 0 0 3px rgba(203,36,49,0.3);
+}
+
+.input-error-message {
+  color: #cb2431;
+  font-size: 0.85em;
+  margin-top: 5px;
+}
+
+.required-star {
+  color: #cb2431; /* Red star for required fields */
+  margin-left: 4px;
+}
+
+/* Radio Group Styling */
 .radio-group {
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  gap: 15px;
   margin-top: 10px;
 }
 
-.radio-group label {
+.radio-label {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 500;
-  color: #003366;
+  align-items: flex-start; /* Align radio button with text */
   cursor: pointer;
+  font-size: 1em;
+  color: #24292e;
 }
 
-.radio-group input[type="radio"] {
-  accent-color: #3399ff;
-  transform: scale(1.2);
+.radio-label input[type="radio"] {
+  margin-right: 10px;
+  margin-top: 3px; /* Adjust vertical alignment */
+  flex-shrink: 0; /* Prevent radio button from shrinking */
 }
 
-/* Button */
+.radio-description {
+  font-size: 0.85em;
+  color: #586069;
+  margin-left: 5px; /* Space between label text and description */
+}
+
+/* Button Styling */
 .create-repo-btn {
+  width: 100%;
   padding: 12px 20px;
-  background: linear-gradient(to right, #4facfe, #00f2fe);
+  background-color: #2ea44f; /* Green GitHub-like button */
   color: white;
+  border: 1px solid rgba(27, 31, 35, 0.15);
+  border-radius: 6px;
+  font-size: 1.1em;
   font-weight: 600;
-  border: none;
-  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-  margin-top: 12px;
+  transition: background-color 0.2s, opacity 0.2s;
+  margin-top: 20px;
 }
 
-.create-repo-btn:hover {
-  background: linear-gradient(to right, #43e97b, #38f9d7);
-  transform: translateY(-2px);
+.create-repo-btn:hover:not(:disabled) {
+  background-color: #2c974b;
 }
 
 .create-repo-btn:disabled {
-  background: #ccc;
+  background-color: #94d3a2; /* Lighter green for disabled state */
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
-/* Error styling */
-.error-message {
-  background: #ffe6e6;
-  color: #cc0000;
-  border: 1px solid #ffcccc;
-  padding: 10px 14px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-weight: 500;
+/* General Error Message */
+.error-message.general-error {
+  background-color: #ffebe9; /* Light red background */
+  border: 1px solid #cb2431;
+  color: #cb2431;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 0.95em;
 }
