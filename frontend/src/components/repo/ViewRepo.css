@@ -1,138 +1,185 @@
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #e0eaff, #ffffff);
-  margin: 0;
-  padding: 0;
+/* frontend/src/components/repo/ViewRepo.css (REPLACE FULL FILE) */
+
+/* General page layout, leveraging index.css .page-container */
+.repository-details-page {
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
 
-.repository-details {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 2rem;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  color: #2c3e50;
-  transition: all 0.3s ease-in-out;
-}
-
-.repository-details:hover {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-}
-
-.back-button {
-  background: rgba(0, 136, 255, 0.2);
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  color: #004c99;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  backdrop-filter: blur(4px);
-}
-
-.back-button:hover {
-  background: rgba(0, 136, 255, 0.35);
-  color: #003366;
-}
-
-h1 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: #003366;
-}
-
-.description {
-  font-size: 1.1rem;
-  color: #4d4d4d;
-  margin-bottom: 1.5rem;
-}
-
-.metadata {
+.repo-header {
   display: flex;
-  gap: 2rem;
-  font-size: 0.95rem;
-  color: #333;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-primary);
+  padding-bottom: 15px;
 }
 
-.metadata span {
-  background: rgba(255, 255, 255, 0.5);
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.6);
-}
-
-.content-section,
-.issues-section {
-  margin-top: 2rem;
-}
-
-.content-section h2,
-.issues-section h2 {
-  font-size: 1.4rem;
-  color: #003366;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.content-list,
-.issues-list {
-  list-style: none;
-  padding: 0;
-}
-
-.content-list li,
-.issues-list li {
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
-}
-
-.content-list li:hover,
-.issues-list li:hover {
-  transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.issues-list h3 {
+.repo-header h1 {
+  font-size: 2em;
   margin: 0;
-  font-size: 1.2rem;
-  color: #222;
+  color: var(--color-text-primary);
 }
 
-.issues-list p {
-  margin: 0.4rem 0;
-  font-size: 0.95rem;
-  color: #444;
+.visibility-badge {
+  padding: 5px 10px;
+  border-radius: var(--border-radius);
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
-.issues-list span {
-  font-size: 0.85rem;
-  display: inline-block;
-  margin-top: 0.3rem;
-  color: #666;
+.visibility-badge.public {
+  background-color: #2ea44f; /* Green */
+  color: white;
 }
 
-.loading,
-.error,
-.not-found {
+.visibility-badge.private {
+  background-color: #586069; /* Gray */
+  color: white;
+}
+
+.repo-owner-info {
+  font-size: 0.95em;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+}
+
+/* Tab Navigation */
+.repo-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.tab-button {
+  background-color: transparent;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1.05em;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.tab-button:hover:not(.active) {
+  color: var(--color-text-link);
+}
+
+.tab-button.active {
+  color: var(--color-text-link);
+  border-bottom-color: var(--color-text-link);
+  font-weight: 600;
+}
+
+/* Tab Content Layout */
+.tab-content {
+  padding: 10px 0;
+}
+
+.repo-content-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+@media (min-width: 992px) {
+  .repo-content-layout {
+    grid-template-columns: 1fr 350px; /* Main content and a fixed-width sidebar for history */
+  }
+}
+
+.files-view h2, .history-view h2, .issues-tab-content h2 {
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-primary);
+  padding-bottom: 10px;
+}
+
+.sub-heading {
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+  margin-bottom: 15px;
+}
+
+
+/* General card styling (already defined in index.css, just ensure usage) */
+.card {
+  /* Inherits styles from .card in index.css */
+  padding: 20px; /* Override default card padding if needed, or match */
+}
+
+/* Issues Tab Content */
+.issues-tab-content {
+  /* Inherits .card styles */
+  padding: 20px; /* Example, adjust as needed */
+}
+
+.issues-tab-content .divider {
+  border: none;
+  border-top: 1px solid var(--color-border-primary);
+  margin: 25px 0;
+}
+
+/* Repository Settings */
+.repo-settings {
+  /* Inherits .card styles */
+  padding: 20px;
+}
+
+.repo-settings h3 {
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-primary);
+  padding-bottom: 15px;
+}
+
+.settings-section {
+  margin-bottom: 25px;
+  padding: 15px;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius);
+}
+
+.settings-section h4 {
+  font-size: 1.2em;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--color-text-primary);
+}
+
+.current-visibility {
+  color: var(--color-text-primary);
+}
+
+.settings-description {
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+  margin-bottom: 15px;
+}
+
+/* Global button styles (.button-primary, .button-danger) are used directly in JSX */
+
+.settings-divider {
+  border: none;
+  border-top: 1px solid var(--color-border-primary);
+  margin: 24px 0;
+}
+
+.danger-zone {
+  border-color: var(--color-danger);
+}
+
+/* Messages */
+.not-found-message { /* Renamed for consistency */
   text-align: center;
-  padding: 2rem;
-  font-size: 1.2rem;
-  color: #333;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 12px;
-  margin: 2rem auto;
-  max-width: 500px;
-  backdrop-filter: blur(8px);
+  padding: 50px;
+  font-size: 1.2em;
+  color: var(--color-text-secondary);
 }
