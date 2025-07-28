@@ -1,79 +1,60 @@
-/* Styling for the commit history container */
+/* frontend/src/components/repo/CommitHistory.css (REPLACE FULL FILE) */
+
 .commit-history-container {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(200, 200, 200, 0.4);
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin-top: 2rem;
+  /* Inherits card styles from index.css */
+  padding: 20px; /* Ensure consistent padding within the card */
 }
 
-/* Commit history header */
 .commit-history-container h3 {
-  padding: 1rem;
-  margin: 0;
-  font-size: 1.2rem;
-  color: #003366;
-  background: rgba(240, 248, 255, 0.6);
-  border-bottom: 1px solid rgba(180, 180, 180, 0.3);
-  backdrop-filter: blur(6px);
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-primary);
+  padding-bottom: 10px;
 }
 
-/* General message or no-commits message */
-.commit-history-container > p {
-  padding: 1rem;
-  color: #4a4a4a;
-  font-size: 0.95rem;
-}
-
-/* Commit list */
 .commit-list {
   list-style: none;
   padding: 0;
-  margin: 0;
 }
 
-/* Each commit item */
 .commit-item {
-  padding: 0.9rem 1.2rem;
-  border-bottom: 1px solid rgba(220, 220, 220, 0.4);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-secondary);
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease-in-out;
 }
 
-.commit-item:hover {
-  background: rgba(255, 255, 255, 0.6);
-  transform: translateY(-2px);
-}
-
-/* Remove border from last item */
 .commit-item:last-child {
   border-bottom: none;
 }
 
-/* Commit message text */
+.commit-item:hover {
+  background-color: var(--color-bg-secondary); /* Lighter background on hover */
+}
+
 .commit-message {
-  font-weight: 600;
-  color: #002b5c;
-  margin-bottom: 0.4rem;
+  font-size: 1em;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 5px;
 }
 
-/* Metadata below the message */
 .commit-meta {
-  font-size: 0.8rem;
-  color: #4d4d4d;
+  font-size: 0.85em;
+  color: var(--color-text-secondary);
 }
 
-/* Commit ID style */
 .commit-id {
-  font-family: Consolas, monospace;
-  background: rgba(240, 240, 240, 0.6);
-  padding: 2px 6px;
-  border-radius: 6px;
-  margin-right: 6px;
-  color: #333;
-  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.05);
+  font-family: monospace; /* Monospace font for commit IDs */
+  margin-right: 8px;
+}
+
+/* For empty state messages, re-using a global class if defined in index.css */
+.empty-state-message {
+  text-align: center;
+  padding: 20px;
+  color: var(--color-text-secondary);
+  font-size: 0.95em;
 }

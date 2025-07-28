@@ -1,18 +1,22 @@
+// frontend/src/components/repo/CommitHistory.jsx (REPLACE FULL FILE)
+
 import React from 'react';
 import './CommitHistory.css';
 
 const CommitHistory = ({ commits, onCommitSelect }) => {
   if (!commits || commits.length === 0) {
     return (
-      <div className="commit-history-container">
+      // Applied 'card' utility class for consistent styling
+      <div className="commit-history-container card">
         <h3>Commit History</h3>
-        <p>No commits have been pushed to this repository yet.</p>
+        <p className="empty-state-message">No commits have been pushed to this repository yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="commit-history-container">
+    // Applied 'card' utility class for consistent styling
+    <div className="commit-history-container card">
       <h3>Commit History ({commits.length})</h3>
       <ul className="commit-list">
         {commits.map((commit) => (
