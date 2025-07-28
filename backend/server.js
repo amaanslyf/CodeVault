@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
-const mainRouter = require('./routes/main.Router');
+const mainRouter = require('./routes/main.router');
 
 // --- NOTE: dotenv.config() is called here to load environment variables for the server ---
 dotenv.config();
