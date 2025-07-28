@@ -1,41 +1,36 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/userModel'); // Using the Mongoose User model
+const User = require('../models/userModel');
 
-/**
- * Middleware to protect routes by verifying a user's JWT.
- * It expects a token in the 'Authorization' header in the format 'Bearer <token>'.
- */
 const authMiddleware = async (req, res, next) => {
   let token;
 
-  // 1. Check for the token in the Authorization header
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
-      // 2. Extract the token from the header
       token = req.headers.authorization.split(' ')[1];
 
-      // 3. Verify the token using the secret key
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      // --- FIX #1: Use the standardized 'JWT_SECRET' environment variable ---
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // 4. Find the user by the ID from the token payload
-      // We use '-password' to exclude the password field from the result
-      req.user = await User.findById(decoded.id).select('-password');
+      // --- NOTE: The payload property should be '_id' to match your User model ---
+      req.user = await User.findById(decoded._id).select('-password');
 
       if (!req.user) {
         return res.status(401).json({ message: 'Not authorized, user not found' });
       }
 
-      // 5. Proceed to the next middleware or route handler
       next();
+      // --- FIX #2: Return here to prevent the 'no token' error from firing ---
+      return; 
     } catch (error) {
       console.error('Token verification failed:', error.message);
       res.status(401).json({ message: 'Not authorized, token failed' });
+      // --- FIX #2: Return here as well ---
+      return; 
     }
   }
 
-  if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
-  }
+  // This part only runs if the 'if' block is skipped entirely.
+  res.status(401).json({ message: 'Not authorized, no token' });
 };
 
 module.exports = authMiddleware;
