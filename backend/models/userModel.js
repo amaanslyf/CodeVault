@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-  //timestamps: true,
   username: {
     type: String,
     required: true,
@@ -15,28 +14,24 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
+    // Note: Password is not required, allowing for potential future OAuth integration
   },
-  repositories: [
-    {
-      default: [],
-      type: Schema.Types.ObjectId,
-      ref: "Repository",
-    },
-  ],
-  followedUsers: [
-    {
-      default: [],
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  starRepos: [
-    {
-      default: [],
-      type: Schema.Types.ObjectId,
-      ref: "Repository",
-    },
-  ],
+  // --- FIX: Correctly define arrays of ObjectIds ---
+  repositories: [{
+    type: Schema.Types.ObjectId,
+    ref: "Repository",
+  }],
+  followedUsers: [{
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  }],
+  starRepos: [{
+    type: Schema.Types.ObjectId,
+    ref: "Repository",
+  }],
+}, { 
+  // --- BEST PRACTICE: Enable timestamps ---
+  timestamps: true 
 });
 
 const User = mongoose.model("User", UserSchema);
