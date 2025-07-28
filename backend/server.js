@@ -39,7 +39,7 @@ function startServer() {
   const httpServer = http.createServer(app);
   const io = new Server(httpServer, {
     cors: {
-      origin: '*',
+      origin: '*',  //replace * with this url if there are any issue and redeploy "https://code-vault-plum.vercel.app/"
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
     }
   });
