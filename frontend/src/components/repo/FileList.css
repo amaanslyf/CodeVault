@@ -1,68 +1,57 @@
-/* Container styling for file list */
-.file-list-container {
-  padding: 1rem;
-  margin: 1rem 0;
-  border: 1px solid rgba(200, 200, 200, 0.4);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-}
+/* frontend/src/components/repo/FileList.css (REPLACE FULL FILE) */
 
-/* Header title */
+
+
 .file-list-container h4 {
-  margin: 0 0 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #24292e;
-  border-bottom: 1px solid rgba(180, 180, 180, 0.3);
-  padding-bottom: 0.5rem;
+  font-size: 1.2em; /* Smaller heading for sub-section */
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-primary);
+  padding-bottom: 8px;
 }
 
-/* List reset and spacing */
 .file-list {
   list-style: none;
   padding: 0;
-  margin: 0;
 }
 
-/* Each file item */
 .file-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(225, 228, 232, 0.5);
-  transition: background-color 0.25s ease;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--color-border-secondary); /* Dashed border for subtlety */
 }
 
 .file-item:last-child {
   border-bottom: none;
 }
 
-.file-item:hover {
-  background-color: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px);
+.file-name {
+  font-size: 0.95em;
+  color: var(--color-text-primary);
+  word-break: break-all; /* Ensure long filenames wrap */
+  margin-right: 15px; /* Space before download link */
 }
 
-/* File name text */
-.file-item span {
-  color: #1c1e21;
-  font-weight: 500;
-}
-
-/* Download link styling */
-.file-item a {
+.download-link {
+  color: var(--color-text-link); /* Global link color */
   text-decoration: none;
-  padding: 6px 12px;
-  background-color: #0366d6;
-  color: #fff;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 2px 6px rgba(3, 102, 214, 0.2);
+  font-size: 0.9em;
+  white-space: nowrap; /* Prevent download link from breaking */
+  transition: color 0.2s ease-in-out;
 }
 
-.file-item a:hover {
-  background-color: #0256b3;
+.download-link:hover {
+  color: var(--color-text-link); /* Already defined in index.css, but good to re-iterate */
+  text-decoration: underline;
+}
+
+/* For empty state messages */
+.empty-state-message {
+  text-align: center;
+  padding: 20px;
+  color: var(--color-text-secondary);
+  font-size: 0.95em;
 }
