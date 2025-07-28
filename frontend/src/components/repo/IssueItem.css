@@ -1,0 +1,89 @@
+/* frontend/src/components/repo/IssueItem.css (REPLACE FULL FILE) */
+
+.issue-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid var(--color-border-primary); /* Use global border */
+  list-style: none;
+  background-color: var(--color-bg-primary); /* Ensure white background for each item */
+}
+
+.issue-item:last-child {
+  border-bottom: none;
+}
+
+.issue-status-icon {
+  margin-right: 15px;
+  font-size: 1.2em; /* Make status icon slightly larger */
+}
+
+.issue-details {
+  flex-grow: 1;
+}
+
+.issue-title {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 1.1em;
+}
+
+.issue-meta {
+  font-size: 0.85em;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+.issue-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+  margin-left: 15px; /* Space between details and actions */
+}
+
+/* Specific styling for small buttons, used by Edit/Delete actions */
+.small-button {
+  padding: 5px 10px;
+  font-size: 0.85em;
+  border-radius: var(--border-radius); /* Use global border-radius */
+}
+
+/* --- Styles for the Editing Form --- */
+.issue-item.editing {
+  background-color: var(--color-bg-secondary); /* Light background for editing */
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius);
+  flex-direction: column; /* Stack content in edit mode */
+  align-items: flex-start;
+}
+
+.issue-edit-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between form elements */
+}
+
+/* Input fields use .input-field from index.css */
+/* Error styles for inputs use .input-error and .input-error-message from index.css */
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%; /* Ensure buttons span full width */
+  margin-top: 10px;
+}
+
+/* Buttons for saving/canceling use global button styles */
+.save-button, .cancel-button {
+  /* Inherits styles from .button-primary and .button-secondary */
+  padding: 8px 15px; /* Adjust padding for these specific buttons */
+}
+
+/* Specific error message for the edit form */
+.edit-form-error {
+  /* Uses .error-message from index.css, just ensures specific margin for context */
+  margin-bottom: 10px;
+}
