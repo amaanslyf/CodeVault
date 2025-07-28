@@ -1,109 +1,178 @@
+const jwt = require('jsonwebtoken'); // --- NEW: Import JWT to manually verify tokens on public routes
 const Issue = require('../models/issueModel');
-const mongoose = require('mongoose');
+const Repository = require('../models/repoModel');
 
-// --- MODIFIED: createIssue now uses the authenticated user as the author ---
+// --- createIssue function ---
 async function createIssue(req, res) {
   const { title, description } = req.body;
-  const { repoId } = req.params; // The ID of the repository to which the issue belongs.
+  const { repoId } = req.params;
+  const authorId = req.user._id;
 
   try {
-    // --- NEW: Get the author's ID from the authenticated user ---
-    // The `authMiddleware` provides the logged-in user's data in `req.user`.
-    const authorId = req.user._id;
+    // --- NEW: Security check before creating an issue ---
+    const repository = await Repository.findById(repoId);
+    if (!repository) {
+      return res.status(404).json({ message: 'Repository not found.' });
+    }
 
-    // Create the new issue with the Mongoose model.
+    // For private repos, only the owner should be able to create issues.
+    if (!repository.visibility && repository.owner.toString() !== authorId.toString()) {
+      return res.status(403).json({ message: 'Access Denied: You cannot create issues in this private repository.' });
+    }
+
     const newIssue = new Issue({
       title,
       description,
       repository: repoId,
-      author: authorId, // Set the author to the logged-in user.
+      author: authorId,
     });
-
     const savedIssue = await newIssue.save();
+    
+    await Repository.findByIdAndUpdate(repoId, { $push: { issues: savedIssue._id } });
+    
+    const issueWithAuthor = await Issue.findById(savedIssue._id).populate('author', 'username');
 
-    // Also, add the new issue's ID to the corresponding repository's 'issues' array.
-    // This is optional but good for data consistency.
-    await mongoose.model('Repository').findByIdAndUpdate(repoId, {
-      $push: { issues: savedIssue._id },
-    });
-
-    res.status(201).json(savedIssue);
+    res.status(201).json(issueWithAuthor);
   } catch (error) {
-    console.error("Error creating issue:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error('Error creating issue:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
-// --- No major changes needed below, but I've ensured they are correct and consistent. ---
-
+// --- MODIFIED: getAllIssues now checks repository visibility ---
 async function getAllIssues(req, res) {
   const { repoId } = req.params;
   try {
-    // find() returns a query, so we must 'await' it.
-    const issues = await Issue.find({ repository: repoId }).populate('author', 'username');
+    const repository = await Repository.findById(repoId);
+    if (!repository) {
+      return res.status(404).json({ message: 'Repository not found' });
+    }
 
-    res.status(200).json(issues);
-  } catch (err) {
-    console.error("Error fetching issues: ", err.message);
-    res.status(500).json({ message: "Server error" });
+    // If the repository is public, anyone can view its issues.
+    if (repository.visibility) {
+      const issues = await Issue.find({ repository: repoId }).populate('author', 'username').sort({ createdAt: -1 });
+      return res.json(issues);
+    }
+
+    // --- If repository is PRIVATE, we must verify the user is the owner ---
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'Authentication required to view issues for a private repository.' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (repository.owner.toString() !== decoded._id) {
+      return res.status(403).json({ message: 'Access denied. You do not have permission to view these issues.' });
+    }
+
+    // If verification passes, fetch the issues for the owner.
+    const issues = await Issue.find({ repository: repoId }).populate('author', 'username').sort({ createdAt: -1 });
+    res.json(issues);
+
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+      return res.status(403).json({ message: 'Access denied. Invalid or expired token.' });
+    }
+    console.error('Error fetching issues:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
+// --- MODIFIED: getIssueById now also checks repository visibility ---
 async function getIssueById(req, res) {
   const { id } = req.params;
   try {
     const issue = await Issue.findById(id).populate('author', 'username');
     if (!issue) {
-      return res.status(404).json({ message: "Issue not found!" });
+      return res.status(404).json({ message: 'Issue not found' });
     }
-    res.json(issue);
-  } catch (err) {
-    console.error("Error fetching issue: ", err.message);
-    res.status(500).json({ message: "Server error" });
+
+    // --- NEW: Security check logic ---
+    const repository = await Repository.findById(issue.repository);
+    if (!repository) {
+      return res.status(404).json({ message: 'Associated repository not found.' });
+    }
+
+    if (repository.visibility) {
+      return res.json(issue); // Public issue, OK to send.
+    }
+
+    // --- If repository is PRIVATE, verify owner ---
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'Authentication required to view this issue.' });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (repository.owner.toString() !== decoded._id) {
+      return res.status(403).json({ message: 'Access denied.' });
+    }
+    
+    res.json(issue); // Owner verified, OK to send.
+
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+      return res.status(403).json({ message: 'Access denied. Invalid or expired token.' });
+    }
+    console.error('Error fetching issue:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
+// --- updateIssueById function ---
+// NOTE: This remains unchanged as per your request to allow any logged-in user to modify issues.
 async function updateIssueById(req, res) {
   const { id } = req.params;
   const { title, description, status } = req.body;
   try {
-    // Note: Add authorization here later if you only want the author to be able to update it.
     const updatedIssue = await Issue.findByIdAndUpdate(
       id,
       { title, description, status },
       { new: true }
-    );
-
+    ).populate('author', 'username');
     if (!updatedIssue) {
-      return res.status(404).json({ message: "Issue not found!" });
+      return res.status(404).json({ message: 'Issue not found' });
     }
-    res.json({ message: "Issue updated", issue: updatedIssue });
-  } catch (err) {
-    console.error("Error during issue update: ", err.message);
-    res.status(500).json({ message: "Server error" });
+    res.json(updatedIssue);
+  } catch (error) {
+    console.error('Error updating issue:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
+// --- deleteIssueById function ---
+// NOTE: This remains unchanged as per your request.
 async function deleteIssueById(req, res) {
-  const { id } = req.params;
+  const { id: issueId } = req.params;
   try {
-    // Note: Add authorization here later if you only want the author to be able to delete it.
-    const issue = await Issue.findByIdAndDelete(id);
-
-    if (!issue) {
-      return res.status(404).json({ message: "Issue not found!" });
+    const deletedIssue = await Issue.findByIdAndDelete(issueId);
+    if (!deletedIssue) {
+      return res.status(404).json({ message: 'Issue not found' });
     }
-    res.json({ message: "Issue deleted successfully" });
-  } catch (err) {
-    console.error("Error during issue deletion: ", err.message);
-    res.status(500).json({ message: "Server error" });
+
+    if (deletedIssue.repository) {
+      await Repository.findByIdAndUpdate(
+        deletedIssue.repository,
+        { $pull: { issues: issueId } }
+      );
+    }
+
+    res.json({ message: 'Issue deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting issue:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
+
 
 module.exports = {
   createIssue,
-  updateIssueById,
-  deleteIssueById,
   getAllIssues,
   getIssueById,
+  updateIssueById,
+  deleteIssueById,
 };

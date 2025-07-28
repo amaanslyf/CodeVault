@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const path = require('path'); // <-- Added for use in pullRepoData
 const Repository = require('../models/repoModel');
 const User = require('../models/userModel');
+const Issue = require('../models/issueModel');
 const { s3, S3_BUCKET } = require('../config/aws-config');
 
 // --- Controller for creating a repository ---
@@ -40,6 +41,30 @@ async function getAllRepositories(req, res) {
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+
+async function getPublicRepositories(req, res) {
+  try {
+    const userId = req.user._id; // Get the logged-in user's ID from the auth token
+
+    // Find repositories that are:
+    // 1. Public (visibility: true)
+    // 2. Not owned by the current user ($ne operator means "not equal")
+    const repositories = await Repository.find({
+      visibility: true,
+      owner: { $ne: userId },
+    })
+      .populate('owner', 'username') // Include the owner's username
+      .sort({ createdAt: -1 }) // Optional: Show the newest public repos first
+      .limit(10); // Optional: Limit the number of suggestions
+
+    res.json(repositories);
+  } catch (error) {
+    console.error('Error fetching public repositories:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+
 
 // --- Controller for fetching a repository by its ID ---
 async function fetchRepositoryById(req, res) {
@@ -122,19 +147,45 @@ async function toggleVisibilityById(req, res) {
 
 // --- Controller for deleting a repository ---
 async function deleteRepositoryById(req, res) {
-  const { id } = req.params;
+  const { id: repoId } = req.params;
+
   try {
-    const repository = await Repository.findByIdAndDelete(id);
+    const repository = await Repository.findById(repoId);
     if (!repository) {
       return res.status(404).json({ message: 'Repository not found' });
     }
+
+    // 1. Delete all issues associated with this repository from MongoDB.
+    await Issue.deleteMany({ repository: repoId });
+
+    // 2. Delete all files and folders for this repository from Amazon S3.
+    const s3Prefix = `repos/${repoId}/`;
+    const listedObjects = await s3.listObjectsV2({ Bucket: S3_BUCKET, Prefix: s3Prefix }).promise();
+
+    if (listedObjects.Contents.length > 0) {
+      const deleteParams = {
+        Bucket: S3_BUCKET,
+        Delete: {
+          Objects: listedObjects.Contents.map(({ Key }) => ({ Key })),
+        },
+      };
+      await s3.deleteObjects(deleteParams).promise();
+    }
+
+    // 3. Remove the repository reference from the owner's user document.
     await User.findByIdAndUpdate(repository.owner, { $pull: { repositories: repository._id } });
-    res.json({ message: 'Repository deleted successfully' });
+
+    // 4. Finally, delete the repository document itself.
+    await Repository.findByIdAndDelete(repoId);
+
+    res.json({ message: 'Repository and all associated issues and files deleted successfully' });
+
   } catch (error) {
     console.error('Error deleting repository:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+
 
 // --- Controller for handling a push from the CLI ---
 async function pushCommit(req, res) {
@@ -209,6 +260,7 @@ async function pullRepoData(req, res) {
 module.exports = {
   createRepository,
   getAllRepositories,
+  getPublicRepositories,
   fetchRepositoryById,
   fetchRepositoryByName,
   fetchRepositoriesForCurrentUser,

@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
+const Repository = require('../models/repoModel');
+const Issue = require('../models/issueModel');
+const { s3, S3_BUCKET } = require('../config/aws-config');
+
 
 // --- SIGNUP: Create a new user ---
 async function signup(req, res) {
@@ -18,7 +22,8 @@ async function signup(req, res) {
       password: hashedPassword,
     });
     if (newUser) {
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+      // --- FIX #1: Use the standardized 'JWT_SECRET' and '_id' payload ---
+      const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.status(201).json({
         token,
         userId: newUser._id,
@@ -40,7 +45,8 @@ async function login(req, res) {
   try {
     const user = await User.findOne({ email });
     if (user && (await bcrypt.compare(password, user.password))) {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+      // --- FIX #1: Use the standardized 'JWT_SECRET' and '_id' payload ---
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.json({
         token,
         userId: user._id,
@@ -56,7 +62,8 @@ async function login(req, res) {
   }
 }
 
-// --- GET ALL USERS: Fetch all users ---
+// --- GET ALL USERS (DEPRECATED) ---
+// This function is kept for reference but its route will be removed for security.
 async function getAllUsers(req, res) {
   try {
     const users = await User.find({}).select('-password');
@@ -66,8 +73,22 @@ async function getAllUsers(req, res) {
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+async function getMe(req, res) {
+  // The user object is attached to req by the authMiddleware
+  // We can send it directly, as it already excludes the password.
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching own user profile:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
 
-// --- GET USER PROFILE: Fetch a single user profile ---
+// --- MODIFIED: GET USER PROFILE now returns a filtered public profile ---
 async function getUserProfile(req, res) {
   const { id } = req.params;
   try {
@@ -75,7 +96,16 @@ async function getUserProfile(req, res) {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json(user);
+    
+    // --- FIX #3: Create a safe public profile to avoid leaking sensitive data ---
+    const publicProfile = {
+      _id: user._id,
+      username: user.username,
+      // Only include repositories that are public
+      repositories: user.repositories.filter(repo => repo.visibility === true)
+    };
+    
+    res.json(publicProfile);
   } catch (error) {
     console.error('Error fetching user profile:', error.message);
     res.status(500).json({ message: 'Internal server error' });
@@ -83,10 +113,8 @@ async function getUserProfile(req, res) {
 }
 
 // --- UPDATE USER PROFILE: Update a user's password ---
+// NOTE: Your existing authorization check here is excellent. No changes needed.
 async function updateUserProfile(req, res) {
-  // --- NEW: Authorization Check ---
-  // Verify that the logged-in user's ID (from the token) matches the ID in the URL.
-  // This prevents a logged-in user from changing another user's password.
   if (req.user._id.toString() !== req.params.id) {
     return res.status(403).json({ message: 'Forbidden: You can only update your own profile.' });
   }
@@ -115,33 +143,51 @@ async function updateUserProfile(req, res) {
 }
 
 // --- DELETE USER PROFILE: Delete a user ---
+// NOTE: Your cascading delete logic here is excellent and robust. No changes needed.
 async function deleteUserProfile(req, res) {
-  // --- NEW: Authorization Check ---
-  // Verify that the logged-in user's ID (from the token) matches the ID in the URL.
-  // This prevents a logged-in user from deleting another user's account.
-  if (req.user._id.toString() !== req.params.id) {
+  const userId = req.params.id;
+
+  if (req.user._id.toString() !== userId) {
     return res.status(403).json({ message: 'Forbidden: You can only delete your own profile.' });
   }
 
-  const { id } = req.params;
   try {
-    const deletedUser = await User.findByIdAndDelete(id);
-    if (!deletedUser) {
-      return res.status(404).json({ message: 'User not found' });
+    const userRepositories = await Repository.find({ owner: userId });
+    if (userRepositories.length > 0) {
+      const repoIds = userRepositories.map(repo => repo._id);
+      await Issue.deleteMany({ repository: { $in: repoIds } });
+      for (const repoId of repoIds) {
+        const s3Prefix = `repos/${repoId}/`;
+        const listedObjects = await s3.listObjectsV2({ Bucket: S3_BUCKET, Prefix: s3Prefix }).promise();
+        if (listedObjects.Contents.length > 0) {
+          const deleteParams = {
+            Bucket: S3_BUCKET,
+            Delete: { Objects: listedObjects.Contents.map(({ Key }) => ({ Key })) },
+          };
+          await s3.deleteObjects(deleteParams).promise();
+        }
+      }
+      await Repository.deleteMany({ owner: userId });
     }
-    // Consider also deleting user's repositories here.
-    res.json({ message: 'User profile deleted successfully' });
+    await Issue.updateMany({ author: userId }, { $set: { author: null } });
+    await User.findByIdAndDelete(userId);
+    res.json({ message: 'User profile and all associated data have been deleted successfully.' });
   } catch (error) {
-    console.error('Error deleting user profile:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error during full user deletion:', error);
+    res.status(500).json({ message: 'Internal server error during the deletion process.' });
   }
 }
 
+
+
+
 module.exports = {
+  getMe,
   signup,
   login,
   getAllUsers,
   getUserProfile,
   updateUserProfile,
   deleteUserProfile,
+
 };
