@@ -1,220 +1,248 @@
-CodeVault: A Full-Stack Version Control System
-CodeVault is a minimal, full-stack GitHub-like version control system built from the ground up. It features a custom command-line interface (CLI) for Git-like operations and a complete React-based web interface for repository visualization, issue tracking, and user management.
+Here is a `README.md` file designed for your CodeVault project, introducing it as a beginner-friendly version control system, detailing its features and technologies, and providing clear usage instructions.
 
-Project Status: Complete
-License: MIT
+```markdown
+# CodeVault: Your Beginner-Friendly Version Control System
 
-Table of Contents
-About The Project
+## 👋 Welcome to CodeVault!
 
-Core Features
+CodeVault is a simplified, Git-like version control system designed specifically for beginners. If you're new to the world of collaborative coding, tracking changes, and managing project history, CodeVault offers an intuitive way to get started without the steep learning curve of more complex systems.
 
-Tech Stack & Architecture
+It allows you to initialize repositories, track file changes, create commits, and synchronize your work with a remote server, all through a straightforward Command Line Interface (CLI) and a clean web-based dashboard.
+
+## ✨ Features
+
+CodeVault provides essential version control features to help you manage your projects effectively:
+
+### 🌐 Web-Based Dashboard
+*   **Intuitive UI:** Easily view and manage your repositories through a clean and responsive web interface.
+*   **Repository Overview:** See a list of your own repositories and discover public projects from other users.
+*   **Repository Details:** Dive into any repository to explore its files, commit history, and manage issues.
+*   **Repository Creation:** Create new public or private repositories directly from the web.
+
+### 📝 Issue Management
+*   **Track Bugs & Features:** Create, view, update, and delete issues associated with your repositories.
+*   **Collaborative:** Any logged-in user can contribute to issue management (update/delete) within a repository, fostering easy collaboration.
+*   **Secure Visibility:** Issues in private repositories are only visible to the repository owner, ensuring sensitive project details remain confidential.
+
+### 💻 Git-like Command Line Interface (CLI)
+CodeVault offers familiar commands that mirror common Git operations, making the transition to professional version control smoother.
+
+*   `codevault login`: Authenticate with your CodeVault account.
+*   `codevault init`: Initialize a new CodeVault repository in your local project directory and link it to the remote.
+*   `codevault add `: Stage changes for the next commit. Add specific files or all eligible files in the current directory.
+*   `codevault commit ""`: Record your staged changes with a descriptive message.
+*   `codevault push`: Upload your local commits to the remote CodeVault server.
+*   `codevault pull`: Download the latest changes and history from the remote repository to your local machine.
+*   `codevault revert `: Roll back your local project files to the state of a specific commit.
+
+### 🔒 Robust Security
+*   **User Authentication:** Secure signup and login with hashed passwords and JSON Web Tokens (JWTs).
+*   **Access Control:** Strict authorization ensures only repository owners can manage repository settings (visibility, deletion).
+*   **Data Protection:** Sensitive user information (like email addresses) is never exposed on public profiles. Issues in private repositories are secured from public viewing.
+*   **Secure File Storage:** Repository files are stored securely on AWS S3, and access is managed via temporary, signed URLs.
+
+## 🛠️ Technologies Used
+
+CodeVault is built with a modern stack, combining popular and powerful technologies:
+
+*   **Frontend:**
+    *   **React.js:** For building a dynamic and responsive user interface.
+    *   **React Router DOM:** For seamless navigation within the single-page application.
+    *   **Axios:** For making HTTP requests to the backend API.
+    *   **CSS Modules/Variables:** For modular and maintainable styling, ensuring a consistent theme.
+*   **Backend:**
+    *   **Node.js:** The JavaScript runtime environment.
+    *   **Express.js:** A fast, unopinionated, minimalist web framework for Node.js.
+    *   **Mongoose:** An elegant MongoDB object modeling tool for Node.js.
+    *   **bcrypt.js:** For secure password hashing.
+    *   **jsonwebtoken (JWT):** For user authentication and authorization.
+    *   **dotenv:** For managing environment variables securely.
+    *   **axios:** For making HTTP requests (e.g., from CLI to API).
+    *   **inquirer:** For interactive command-line prompts in the CLI.
+    *   **form-data:** For handling multipart form data (file uploads).
+*   **Database:**
+    *   **MongoDB Atlas:** A NoSQL cloud database for flexible and scalable data storage.
+*   **Cloud Storage:**
+    *   **AWS S3:** For highly scalable and durable storage of repository files.
+
+## 🚀 Getting Started (Beginner-Friendly Guide)
+
+Follow these steps to get CodeVault up and running on your local machine.
+
+### Prerequisites
+
+*   Node.js (LTS version recommended) installed on your system.
+*   npm (Node Package Manager) - comes with Node.js.
+*   A MongoDB Atlas account (or a local MongoDB instance).
+*   An AWS account with S3 bucket configured and IAM user credentials.
+
+### 1. Clone the Repository
+
+First, get the CodeVault project onto your machine:
+
+```
+git clone 
+cd codevault # Or whatever your project's root directory is
+```
 
-Getting Started
+### 2. Backend Setup
 
-Prerequisites
+The backend handles all the logic, database interactions, and file storage.
+
+1.  **Navigate to the `backend` directory:**
+    ```
+    cd backend
+    ```
+
+2.  **Install dependencies:**
+    ```
+    npm install
+    ```
 
-Installation & Setup
+3.  **Create your `.env` file:**
+    In the `backend` directory, create a file named `.env`. This file will store your sensitive information. **Do NOT commit this file to Git!** Add it to your `.gitignore`.
 
-Usage Guide
+    ```
+    # backend/.env
+    PORT=3002
+    MONGODB_URI=your_mongodb_atlas_connection_string_here # e.g., mongodb+srv://:@cluster0.abcde.mongodb.net/codevault?retryWrites=true&w=majority
+    JWT_SECRET=your_super_secret_and_long_random_string_here_12345! # Generate a strong, random string
+    
+    AWS_REGION=your_aws_region # e.g., ap-south-1, us-east-1
+    AWS_ACCESS_KEY_ID=YOUR_ACTUAL_AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY=YOUR_ACTUAL_AWS_SECRET_ACCESS_KEY
+    S3_BUCKET_NAME=your_codevault_s3_bucket_name # e.g., codevaults3
+    ```
+    *Replace the placeholder values with your actual credentials and settings.*
 
-Using the CLI
+4.  **Start the backend server:**
+    ```
+    npm start
+    ```
+    You should see messages indicating that MongoDB is connected and the server is running on `http://localhost:3002`. Keep this terminal window open.
 
-Using the Web Application
+### 3. Frontend Setup
 
-Project Status
+The frontend is your web interface for CodeVault.
 
-About The Project
-This project was built to understand the core architectural principles behind version control systems like Git and hosting platforms like GitHub. It separates local versioning (handled by the CLI) from remote storage and collaboration (handled by the web server and web app).
+1.  **Open a new terminal window** and navigate to the `frontend` directory:
+    ```
+    cd ../frontend
+    ```
 
-The system allows users to:
+2.  **Install dependencies:**
+    ```
+    npm install
+    ```
 
-Initialize repositories from a custom CLI.
+3.  **Start the frontend development server:**
+    ```
+    npm start
+    ```
+    This will usually open your browser to `http://localhost:5173` (or another port if 5173 is in use).
 
-Perform local operations like add and commit.
+### 4. CodeVault CLI Setup
 
-push commits to a central server where files are stored in Amazon S3 and metadata is stored in MongoDB.
+To use the `codevault` commands globally on your system:
 
-pull changes from the remote server to sync local history.
+1.  **Open a new terminal window** (ensure it's not in the `backend` or `frontend` directory, ideally from your project root or anywhere you want to run `codevault` commands).
+2.  **Navigate to the `backend` directory again:**
+    ```
+    cd backend
+    ```
+3.  **Link the CLI globally:**
+    ```
+    npm link
+    ```
+    This command makes `codevault` accessible from any directory in your terminal.
 
-View repositories, commit history, file lists, and manage issues through a modern React web interface.
+### 5. Using CodeVault (Your First Project!)
 
-Core Features
-Secure RESTful API: A backend built with Node.js and Express, secured with JWT-based authentication and ownership-based authorization.
+Now you're ready to use CodeVault like a pro!
 
-Custom CLI: A powerful command-line interface built with yargs that mimics core Git commands (login, init, add, commit, push, pull).
+#### Step 1: Log In to CodeVault
 
-React Web Application: A complete Single Page Application (SPA) for a rich user experience, including:
+Open any terminal window (not the ones running your frontend/backend servers) and run:
 
-User signup and login.
+```
+codevault login
+```
+Follow the prompts to enter your email and password. This will save your authentication token so the CLI can interact with your backend.
 
-A dashboard to view personal and suggested repositories.
+#### Step 2: Initialize a New Repository
 
-A repository viewer with tabs for code and issues.
+Navigate to an empty folder on your computer where you want to start a new project, or an existing project folder. For example:
 
-A commit history viewer and a list of files per commit.
+```
+mkdir my-first-codevault-project
+cd my-first-codevault-project
+codevault init
+```
+This will create a new repository on your CodeVault server and link your local folder to it. A `.codevault` directory will be created inside your project.
 
-A fully functional issue tracker.
+#### Step 3: Create and Add Files
 
-Cloud Storage Integration: Uses Amazon S3 for scalable and secure storage of all repository file contents.
+Create some files in your `my-first-codevault-project` folder. For example, create a `hello.txt` file:
 
-MongoDB Database: Leverages MongoDB Atlas for storing all metadata related to users, repositories, commits, and issues.
+```
+echo "Hello, CodeVault!" > hello.txt
+```
+Now, add your file(s) to the staging area:
 
-Tech Stack & Architecture
-Tech Stack
-Backend:
+```
+codevault add hello.txt
+# Or to add all new/modified files in the current directory:
+# codevault add . 
+```
 
-Node.js, Express.js
+#### Step 4: Commit Your Changes
 
-MongoDB, Mongoose
+Once files are added, commit them to your local history:
 
-Amazon S3 (aws-sdk)
+```
+codevault commit "Initial commit: Added hello.txt"
+```
 
-JSON Web Tokens (jsonwebtoken), bcrypt.js
+#### Step 5: Push to CodeVault Server
 
-Yargs, Multer, Inquirer
+Send your local commits to the remote CodeVault server:
 
-Frontend:
+```
+codevault push
+```
+Now, check your CodeVault web dashboard (e.g., `http://localhost:5173`)! You should see your new repository and its commit history.
 
-React, React Router
+#### Step 6: Make More Changes and Push Again
 
-Axios
+Modify `hello.txt` or create new files.
 
-Primer React (for GitHub-like UI components)
+```
+echo "This is a new line." >> hello.txt
+codevault add .
+codevault commit "Added a new line to hello.txt"
+codevault push
+```
 
-Database: MongoDB Atlas
+#### Step 7: Pull Changes from Remote
 
-Cloud Storage: Amazon S3
+If you (or a collaborator) made changes on another machine or directly through the web interface (if implemented), you can pull them:
 
-Architecture
-The project is a classic client-server application with three main components:
+```
+codevault pull
+```
+This will update your local `.codevault/commits` directory.
 
-Backend Server (Node.js/Express): The central brain of the application. It handles all business logic, authenticates users, manages metadata in MongoDB, and orchestrates file uploads/downloads with Amazon S3.
+#### Step 8: Revert to a Previous Commit
 
-CLI Client (Node.js/Yargs): The "Git" part of the project. It allows users to perform version control operations from their terminal. It communicates exclusively with the Backend Server's API for remote operations (login, init, push, pull).
+To go back to a specific version of your files, first find the `commit_id` from your web dashboard or `codevault pull` output. Then use:
 
-Web Client (React): The "GitHub" part of the project. It provides a graphical user interface for interacting with the platform. It also communicates exclusively with the Backend Server's API.
+```
+codevault revert 
+```
+**Caution:** This will overwrite files in your current directory. Ensure you have backed up any uncommitted work.
 
-Getting Started
-Follow these instructions to get a local copy up and running.
+Thanks!
+Love A...!
 
-Prerequisites
-You will need the following software and accounts installed on your machine:
 
-Node.js (v16 or later)
-
-npm
-
-A free MongoDB Atlas account for your database.
-
-An AWS account with an S3 bucket created.
-
-Installation & Setup
-Clone the repository:
-
-text
-git clone https://your-repository-url/CodeVault.git
-cd CodeVault
-Install Backend Dependencies:
-
-text
-cd backend
-npm install
-Install Frontend Dependencies:
-
-text
-cd ../frontend
-npm install
-Set Up Backend Environment Variables:
-In the backend directory, create a .env file and add the following keys. Do not commit this file to Git.
-
-text
-# Your MongoDB connection string
-MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/CodeVault?retryWrites=true&w=majority
-
-# A secret key for signing JWTs (can be any long, random string)
-JWT_SECRET_KEY=your_super_secret_key
-
-# The port for the backend server
-PORT=3002
-
-# Your AWS credentials and S3 bucket name
-AWS_ACCESS_KEY_ID=your_aws_access_key
-AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-AWS_S3_BUCKET_NAME=your_s3_bucket_name
-Usage Guide
-1. Running the Application
-Start the Backend Server:
-
-text
-# From the /backend directory
-npm start
-The server will be running on http://localhost:3002.
-
-Start the Frontend Development Server:
-
-text
-# From the /frontend directory
-npm run dev
-The web application will be available at http://localhost:5173 (or another port if 5173 is in use).
-
-2. Using the CLI
-The CLI is run via node from your terminal.
-
-Step 1: Login
-First, you must log in to your CodeVault account.
-
-text
-node path/to/your/project/backend/index.js login
-Follow the interactive prompts to enter your email and password. This saves an authentication token locally.
-
-Step 2: Initialize a Repository
-Create a new folder for your project, cd into it, and then run init.
-
-text
-mkdir my-first-project
-cd my-first-project
-node ../path/to/your/project/backend/index.js init
-This creates the repository on the CodeVault server and links your local folder to it.
-
-Step 3: Add and Commit Files
-These operations are purely local.
-
-text
-# Create a new file
-echo "Hello, CodeVault!" > readme.txt
-
-# Add the file to staging
-node ../path/to/your/project/backend/index.js add readme.txt
-
-# Commit the staged changes
-node ../path/to/your/project/backend/index.js commit -m "Add initial readme file"
-Step 4: Push to Remote
-Send your local commits to the server.
-
-text
-node ../path/to/your/project/backend/index.js push
-Step 5: Pull from Remote
-Sync your local repository with the version on the server.
-
-text
-node ../path/to/your/project/backend/index.js pull
-3. Using the Web Application
-Navigate to the running frontend application in your browser.
-
-Sign up for a new account or Login with existing credentials.
-
-You will be redirected to the Dashboard, where you can see your repositories.
-
-Click "Create Repository" to create a new repository via the web form.
-
-Click on any repository to go to the Repository View Page.
-
-Use the "Code" tab to view the commit history and the files associated with each commit.
-
-Use the "Issues" tab to view existing issues or submit a new one.
-
-Use the "Settings" tab to manage the repository (e.g., delete it).
-
-Visit the Profile page to manage your password or delete your account.
+```
