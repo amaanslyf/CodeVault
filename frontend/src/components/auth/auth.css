@@ -1,185 +1,151 @@
-/* Overall Page Styling */
+/* frontend/src/components/auth/auth.css (REPLACE FULL FILE) */
+
+/* The unique background is now applied to a wrapper, not the global body */
+.auth-page-wrapper {
+  /* MODIFIED: Adjusted linear-gradient colors for a darker, tech-themed feel */
+  background: url('https://www.transparenttextures.com/patterns/stardust.png') repeat, linear-gradient(120deg, #1f2733, #3a475d);
+  background-size: cover;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .login-wrapper {
-  color: #f1f6fd;
-  height: 100vh;
-  width: 100vw;
-  font-family: "Asap", sans-serif;
-  background: linear-gradient(135deg, #cfe9ff, #a3c9f8); /* Bluish gradient */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(6px);
+  padding: 2rem;
+  max-width: 90%;
 }
 
-/* Logo Section */
+.login-box-wrapper {
+  /* MODIFIED: Slightly darker background for the glass effect */
+  background: rgba(30, 40, 50, 0.4); /* Darker, slightly opaque background */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  /* MODIFIED: Darker border for the glass effect */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Lighter, subtle border */
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); /* Darker shadow */
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+}
+
 .login-logo-container {
-  padding: 30px 0 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 .logo-login {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(4px);
+  width: 80px;
+  height: auto;
 }
 
-/* Box Container */
-.login-box-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 25px;
+.login-heading h1 {
+  /* MODIFIED: Changed heading color to a lighter tone, closer to white but not pure white */
+  color: #e0e6eb; /* Light gray for headings */
+  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
-/* Login Card with Glass Effect */
-.login-box {
-  width: 370px;
-  min-height: 320px;
-  padding: 25px 15px;
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+.login-box form {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 25px;
-  transition: all 0.4s ease;
+  gap: 1rem;
 }
 
-/* Input Fields */
-.input {
-  width: 260px;
-  height: 38px;
-  border: 1px solid rgba(203, 213, 225, 0.8);
-  border-radius: 8px;
-  padding: 0 1rem;
-  font-size: 1rem;
-  color: #111827;
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(6px);
-  transition: all 0.3s ease;
-}
-
-.input:hover,
-.input:focus {
-  border-color: #3b82f6;
-  background: rgba(255, 255, 255, 0.6);
-  outline: none;
-}
-
-/* Labels */
 .label {
+  font-size: 0.9rem;
+  /* MODIFIED: Changed label color to a lighter tone */
+  color: #c9d1d9; /* Lighter gray for labels */
+  margin-bottom: 0.2rem;
   display: block;
-  margin-bottom: 0.3rem;
-  font-size: 0.95rem;
-  font-weight: bold;
-  color: #1e293b;
 }
 
-/* Submit Button */
-.submit-btn {
-  width: 260px;
-  height: 38px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(to right, #3b82f6, #60a5fa);
+.input {
+  padding: 0.6rem;
+  border-radius: var(--border-radius);
+  /* MODIFIED: Darker, subtle border for inputs */
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Slightly less transparent */
+  /* MODIFIED: Darker background for inputs */
+  background: rgba(0, 0, 0, 0.2); /* More opaque, darker background */
+  /* MODIFIED: Lighter text color for visibility on darker background */
+  color: #e0e6eb; /* Light gray for input text */
+  outline: none;
+  font-size: 1em;
+}
+
+.input::placeholder {
+  /* MODIFIED: Slightly darker placeholder color for contrast */
+  color: #8b949e; /* Muted gray for placeholders */
+}
+
+.login-btn {
+  margin-top: 1rem;
+  border-radius: var(--border-radius);
+  background-color: var(--color-primary); /* Green for primary action */
   color: white;
-  font-weight: bold;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-}
-
-.submit-btn:hover {
-  background: linear-gradient(to right, #2563eb, #3b82f6);
+  border: none;
+  padding: 10px 18px;
+  font-weight: 600;
   cursor: pointer;
-  transform: scale(1.03);
+  transition: background-color 0.2s;
 }
 
-/* Passkey Sign-In Box */
-.passkey-signin {
-  width: 370px;
-  height: 90px;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(219, 234, 254, 0.6);
-  border-radius: 12px;
-  margin: 10px auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 8px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+.login-btn:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
 }
 
-/* Links */
-.passkey,
-.signup {
-  color: #2563eb;
-  font-weight: 500;
-  cursor: pointer;
+.login-btn:disabled {
+  background-color: #94d3a2;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.pass-box {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.pass-box p {
+  /* MODIFIED: Changed paragraph text color */
+  color: #c9d1d9; /* Muted gray for general text */
+  font-size: 0.95em;
+}
+
+.pass-box a {
+  /* MODIFIED: Changed link color to blend with theme */
+  color: #58a6ff; /* A slightly brighter blue for links, stands out on dark */
+  text-decoration: underline;
   transition: color 0.2s;
 }
 
-.passkey:hover,
-.signup:hover {
-  color: #1d4ed8;
-  text-decoration: underline;
+.pass-box a:hover {
+  color: #8b949e; /* Muted hover for links */
 }
 
-/* Additional Buttons */
-.login-btn,
-.signup-button {
-  width: 260px;
-  height: 38px;
-  background: rgba(144, 238, 144, 0.6);
-  border-radius: 8px;
-  font-weight: 600;
-  color: #1f2937;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(0, 128, 0, 0.1);
+/* Error message styling (from index.css - general-error) */
+.error-message {
+  background-color: #ffebe9;
+  border: 1px solid #cb2431;
+  color: #cb2431;
+  padding: 10px 15px;
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.95em;
 }
 
-.login-btn:hover,
-.signup-button:hover {
-  background: rgba(94, 240, 94, 0.7);
-  transform: scale(1.02);
-}
-
-/* Container for Password Reset / Extra Info */
-.pass-box {
-  width: 370px;
-  padding: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  backdrop-filter: blur(4px);
-}
-
-/* Responsive Design */
-@media screen and (max-width: 400px) {
-  .login-box,
-  .pass-box,
-  .passkey-signin {
-    width: 90%;
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .login-wrapper {
+    padding: 1rem;
   }
 
-  .input,
-  .login-btn,
-  .signup-button {
-    width: 90%;
+  .login-box-wrapper {
+    padding: 1.5rem;
   }
 }
