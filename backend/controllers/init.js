@@ -70,7 +70,7 @@ async function initRepo() {
 
 
     } catch (error) {
-        console.error('Error initializing repository:', error.response?.data?.message || error.message);
+        console.error('Error initializing repository:', error.response?.data?.message || error.message, error);
     }
 }
 
