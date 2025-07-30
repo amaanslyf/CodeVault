@@ -81,7 +81,7 @@ const Login = () => {
             </form>
           </div>
           <div className="pass-box">
-            <p>New to CodeVault? <Link to="/signup"> Please create an account</Link></p>
+            <p>New to CodeVault? <Link to="/signup"> create an account</Link></p>
           </div>
         </div>
       </div>
