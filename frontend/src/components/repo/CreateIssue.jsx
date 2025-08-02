@@ -1,5 +1,3 @@
-// frontend/src/components/repo/CreateIssue.jsx (REPLACE FULL FILE)
-
 import React, { useState } from 'react';
 import api from '../../api';
 import './CreateIssue.css';
@@ -8,9 +6,9 @@ const CreateIssue = ({ repoId, onIssueCreated }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [generalError, setGeneralError] = useState(''); // Changed to generalError to avoid conflict
-  const [titleError, setTitleError] = useState('');     // NEW: For specific title errors
-  const [descriptionError, setDescriptionError] = useState(''); // NEW: For specific description errors
+  const [generalError, setGeneralError] = useState(''); 
+  const [titleError, setTitleError] = useState('');     // For specific title errors
+  const [descriptionError, setDescriptionError] = useState(''); //For specific description errors
 
   // Validation functions
   const validateTitle = (value) => {
@@ -38,25 +36,24 @@ const CreateIssue = ({ repoId, onIssueCreated }) => {
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
-    if (titleError) setTitleError(''); // Clear error on change
+    if (titleError) setTitleError(''); 
   };
 
   const handleDescriptionChange = (e) => {
     setDescription(e.target.value);
-    if (descriptionError) setDescriptionError(''); // Clear error on change
+    if (descriptionError) setDescriptionError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Run all validations
     const newTitleError = validateTitle(title);
     const newDescriptionError = validateDescription(description);
 
     if (newTitleError || newDescriptionError) {
       setTitleError(newTitleError);
       setDescriptionError(newDescriptionError);
-      setGeneralError('Please fix the errors in the form.'); // General message for form issues
+      setGeneralError('Please fix the errors in the form.'); 
       return;
     }
 
@@ -70,7 +67,6 @@ const CreateIssue = ({ repoId, onIssueCreated }) => {
       onIssueCreated(response.data);
       setTitle('');
       setDescription('');
-      // Optionally show a success message here (e.g., using a toast)
     } catch (err) {
       setGeneralError(err.response?.data?.message || 'Failed to create issue.');
       console.error('Issue creation error:', err);
@@ -114,7 +110,7 @@ const CreateIssue = ({ repoId, onIssueCreated }) => {
         <button 
           type="submit" 
           disabled={isLoading}
-          className="button-primary" // Use global button primary style
+          className="button-primary" 
         >
           {isLoading ? 'Submitting...' : 'Submit new issue'}
         </button>

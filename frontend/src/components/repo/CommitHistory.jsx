@@ -1,4 +1,3 @@
-// frontend/src/components/repo/CommitHistory.jsx (REPLACE FULL FILE)
 
 import React from 'react';
 import './CommitHistory.css';

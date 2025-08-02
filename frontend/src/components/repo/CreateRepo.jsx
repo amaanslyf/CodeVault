@@ -1,4 +1,3 @@
-// frontend/src/components/repo/CreateRepo.jsx (REPLACE FULL FILE)
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,24 +13,23 @@ const CreateRepo = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [nameError, setNameError] = useState(''); // NEW: State for name-specific error
+  const [nameError, setNameError] = useState(''); 
 
   const validateName = (name) => {
     if (!name.trim()) {
       return "Repository name cannot be empty.";
     }
-    // Optional: Add more specific rules for repository names
-    // Example: Only alphanumeric, dashes, and underscores
+    
     if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
       return "Name can only contain letters, numbers, dashes, and underscores.";
     }
     if (name.length < 3) {
       return "Name must be at least 3 characters long.";
     }
-    if (name.length > 100) { // Arbitrary limit, adjust as needed
+    if (name.length > 100) { 
       return "Name cannot exceed 100 characters.";
     }
-    return ''; // No error
+    return ''; 
   };
 
   const handleChange = (e) => {
@@ -76,7 +74,6 @@ const CreateRepo = () => {
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || 'Failed to create repository';
-      // If the error is about name existence, show it specifically
       if (errorMessage.includes('A repository with this name already exists')) {
         setNameError(errorMessage);
       } else {
@@ -105,21 +102,20 @@ const CreateRepo = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              // Removed 'required' here to rely on custom validation
               placeholder="e.g., my-awesome-project"
-              className={nameError ? 'input-error' : ''} // Add class for error styling
+              className={nameError ? 'input-error' : ''} 
             />
             {nameError && <p className="input-error-message">{nameError}</p>} {/* Display name-specific error */}
           </div>
           
           <div className="form-group">
             <label htmlFor="description">Description (optional)</label>
-            <textarea // Changed to textarea for better multi-line input
+            <textarea 
               id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
-              rows="3" // Default rows for textarea
+              rows="3"
               placeholder="A short description of your repository"
             ></textarea>
           </div>
@@ -152,7 +148,7 @@ const CreateRepo = () => {
           
           <button 
             type="submit" 
-            disabled={isLoading || !formData.name.trim() || nameError} // Disable if loading, name empty after trim, or name has validation error
+            disabled={isLoading || !formData.name.trim() || nameError} 
             className="create-repo-btn"
           >
             {isLoading ? 'Creating repository...' : 'Create repository'}
