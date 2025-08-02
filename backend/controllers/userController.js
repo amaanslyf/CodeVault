@@ -4,9 +4,6 @@ const User = require('../models/userModel');
 const Repository = require('../models/repoModel');
 const Issue = require('../models/issueModel');
 const { s3, S3_BUCKET } = require('../config/aws-config');
-
-
-// --- SIGNUP: Create a new user ---
 async function signup(req, res) {
   const { username, password, email } = req.body;
   try {
@@ -22,7 +19,6 @@ async function signup(req, res) {
       password: hashedPassword,
     });
     if (newUser) {
-      // --- FIX #1: Use the standardized 'JWT_SECRET' and '_id' payload ---
       const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.status(201).json({
         token,
@@ -38,14 +34,11 @@ async function signup(req, res) {
     res.status(500).json({ message: 'Internal server error' });
   }
 }
-
-// --- LOGIN: Authenticate a user ---
 async function login(req, res) {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
     if (user && (await bcrypt.compare(password, user.password))) {
-      // --- FIX #1: Use the standardized 'JWT_SECRET' and '_id' payload ---
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.json({
         token,
@@ -62,17 +55,6 @@ async function login(req, res) {
   }
 }
 
-// --- GET ALL USERS (DEPRECATED) ---
-// This function is kept for reference but its route will be removed for security.
-async function getAllUsers(req, res) {
-  try {
-    const users = await User.find({}).select('-password');
-    res.json(users);
-  } catch (error) {
-    console.error('Error fetching users:', error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-}
 async function getMe(req, res) {
   // The user object is attached to req by the authMiddleware
   // We can send it directly, as it already excludes the password.
@@ -88,7 +70,6 @@ async function getMe(req, res) {
   }
 }
 
-// --- MODIFIED: GET USER PROFILE now returns a filtered public profile ---
 async function getUserProfile(req, res) {
   const { id } = req.params;
   try {
@@ -97,11 +78,9 @@ async function getUserProfile(req, res) {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    // --- FIX #3: Create a safe public profile to avoid leaking sensitive data ---
     const publicProfile = {
       _id: user._id,
       username: user.username,
-      // Only include repositories that are public
       repositories: user.repositories.filter(repo => repo.visibility === true)
     };
     
@@ -112,8 +91,6 @@ async function getUserProfile(req, res) {
   }
 }
 
-// --- UPDATE USER PROFILE: Update a user's password ---
-// NOTE: Your existing authorization check here is excellent. No changes needed.
 async function updateUserProfile(req, res) {
   if (req.user._id.toString() !== req.params.id) {
     return res.status(403).json({ message: 'Forbidden: You can only update your own profile.' });
@@ -142,8 +119,6 @@ async function updateUserProfile(req, res) {
   }
 }
 
-// --- DELETE USER PROFILE: Delete a user ---
-// NOTE: Your cascading delete logic here is excellent and robust. No changes needed.
 async function deleteUserProfile(req, res) {
   const userId = req.params.id;
 

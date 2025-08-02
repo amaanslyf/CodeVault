@@ -1,15 +1,13 @@
-const jwt = require('jsonwebtoken'); // --- NEW: Import JWT to manually verify tokens on public routes
+const jwt = require('jsonwebtoken');
 const Issue = require('../models/issueModel');
 const Repository = require('../models/repoModel');
 
-// --- createIssue function ---
 async function createIssue(req, res) {
   const { title, description } = req.body;
   const { repoId } = req.params;
   const authorId = req.user._id;
 
   try {
-    // --- NEW: Security check before creating an issue ---
     const repository = await Repository.findById(repoId);
     if (!repository) {
       return res.status(404).json({ message: 'Repository not found.' });
@@ -39,7 +37,6 @@ async function createIssue(req, res) {
   }
 }
 
-// --- MODIFIED: getAllIssues now checks repository visibility ---
 async function getAllIssues(req, res) {
   const { repoId } = req.params;
   try {
@@ -48,13 +45,12 @@ async function getAllIssues(req, res) {
       return res.status(404).json({ message: 'Repository not found' });
     }
 
-    // If the repository is public, anyone can view its issues.
+
     if (repository.visibility) {
       const issues = await Issue.find({ repository: repoId }).populate('author', 'username').sort({ createdAt: -1 });
       return res.json(issues);
     }
 
-    // --- If repository is PRIVATE, we must verify the user is the owner ---
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -67,7 +63,6 @@ async function getAllIssues(req, res) {
       return res.status(403).json({ message: 'Access denied. You do not have permission to view these issues.' });
     }
 
-    // If verification passes, fetch the issues for the owner.
     const issues = await Issue.find({ repository: repoId }).populate('author', 'username').sort({ createdAt: -1 });
     res.json(issues);
 
@@ -80,7 +75,6 @@ async function getAllIssues(req, res) {
   }
 }
 
-// --- MODIFIED: getIssueById now also checks repository visibility ---
 async function getIssueById(req, res) {
   const { id } = req.params;
   try {
@@ -89,17 +83,15 @@ async function getIssueById(req, res) {
       return res.status(404).json({ message: 'Issue not found' });
     }
 
-    // --- NEW: Security check logic ---
     const repository = await Repository.findById(issue.repository);
     if (!repository) {
       return res.status(404).json({ message: 'Associated repository not found.' });
     }
 
     if (repository.visibility) {
-      return res.json(issue); // Public issue, OK to send.
+      return res.json(issue);
     }
 
-    // --- If repository is PRIVATE, verify owner ---
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -112,7 +104,7 @@ async function getIssueById(req, res) {
       return res.status(403).json({ message: 'Access denied.' });
     }
     
-    res.json(issue); // Owner verified, OK to send.
+    res.json(issue); 
 
   } catch (error) {
     if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
@@ -123,8 +115,6 @@ async function getIssueById(req, res) {
   }
 }
 
-// --- updateIssueById function ---
-// NOTE: This remains unchanged as per your request to allow any logged-in user to modify issues.
 async function updateIssueById(req, res) {
   const { id } = req.params;
   const { title, description, status } = req.body;
@@ -144,8 +134,6 @@ async function updateIssueById(req, res) {
   }
 }
 
-// --- deleteIssueById function ---
-// NOTE: This remains unchanged as per your request.
 async function deleteIssueById(req, res) {
   const { id: issueId } = req.params;
   try {
