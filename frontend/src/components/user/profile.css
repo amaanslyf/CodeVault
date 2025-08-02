@@ -4,10 +4,6 @@
   padding-bottom: 30px;
 }
 
-/* Main profile card, leverages .card from index.css */
-.user-profile-card {
-  /* Inherits padding, border, shadow from .card */
-}
 
 .user-profile-card h3 {
   font-size: 1.5em;
