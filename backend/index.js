@@ -16,10 +16,7 @@ dotenv.config();
 
 yargs(hideBin(process.argv))
   .command('start', 'Start the CodeVault server', {}, startServer)
-  
-  // --- FIX: Use the imported 'loginUser' variable here ---
   .command('login', 'Authenticate with your CodeVault account', {}, loginUser)
-
   .command('init', 'Initialize a new repository', {}, initRepo)
   .command('add <file>', 'Add a file to the repository', (yargs) => {
     yargs.positional('file', {
