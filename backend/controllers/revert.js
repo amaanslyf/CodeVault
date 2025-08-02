@@ -1,13 +1,10 @@
-// backend/controllers/revert.js (REPLACE FULL FILE)
-
-const fs = require('fs').promises; // Use fs.promises directly
+const fs = require('fs').promises; 
 const path = require('path');
 
 async function revertRepo(commitID) {
-    // --- FIX: Consistent local repository folder name ---
     const repoPath = path.resolve(process.cwd(), '.codevault');
     const commitsPath = path.join(repoPath, 'commits');
-    const projectRoot = process.cwd(); // --- FIX: Correct destination for files ---
+    const projectRoot = process.cwd(); 
 
     try {
         const commitDir = path.join(commitsPath, commitID);
@@ -20,12 +17,12 @@ async function revertRepo(commitID) {
                 console.error(`Error: Commit ID "${commitID}" not found locally.`);
                 return;
             }
-            throw err; // Re-throw other access errors
+            throw err; 
         }
         
         // Read the commit metadata to get the list of files for this commit
         const commitMetadata = JSON.parse(await fs.readFile(path.join(commitDir, 'commit.json'), 'utf8'));
-        const filesToRevert = commitMetadata.files; // Use the manifest from commit.json
+        const filesToRevert = commitMetadata.files; 
 
         if (!filesToRevert || filesToRevert.length === 0) {
             console.log(`Commit ${commitID} has no tracked files to revert.`);
@@ -34,7 +31,7 @@ async function revertRepo(commitID) {
 
         console.log(`Reverting to commit ${commitID.substring(0, 8)}...`);
 
-        // --- OPTIONAL: Clean up current working directory first (use with caution!) ---
+        // Clean up current working directory first (use with caution!) 
         // This is a more aggressive revert that removes untracked files and replaces all.
         // let currentProjectFiles = await fs.readdir(projectRoot);
         // for (const file of currentProjectFiles) {
@@ -47,7 +44,7 @@ async function revertRepo(commitID) {
 
         for (const file of filesToRevert) {
             const sourceFilePath = path.join(commitDir, file);
-            const destinationFilePath = path.join(projectRoot, file); // --- FIX: Copy to project root ---
+            const destinationFilePath = path.join(projectRoot, file); 
             
             try {
                 await fs.copyFile(sourceFilePath, destinationFilePath);
