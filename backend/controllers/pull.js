@@ -1,16 +1,12 @@
-// backend/controllers/pull.js (REPLACE FULL FILE)
-
 const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
 const axios = require('axios');
-const dotenv = require('dotenv'); // --- NEW: Import dotenv
+const dotenv = require('dotenv'); 
 
-// Load environment variables for this CLI command
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-// Construct the server URL dynamically
-const API_URL = `http://localhost:${process.env.PORT || 3000}`; // --- NEW: Use dynamic API_URL
+const API_URL = `http://localhost:${process.env.PORT || 3000}`; 
 
 
 // --- Define paths for local and global configuration ---
@@ -19,11 +15,9 @@ const LOCAL_CONFIG_FILE = path.join(LOCAL_REPO_PATH, 'config.json');
 const COMMITS_PATH = path.join(LOCAL_REPO_PATH, 'commits');
 const GLOBAL_CONFIG_FILE = path.join(os.homedir(), '.codevault', 'config.json');
 
-
-// This is the main function for the 'pull' command
 async function pullRepo() {
     try {
-        // 1. Read local and global config files to get repository ID and auth token
+        //Read local and global config files to get repository ID and auth token
         let repositoryId, token;
         try {
             ({ repositoryId } = JSON.parse(await fs.readFile(LOCAL_CONFIG_FILE, 'utf8')));
@@ -42,9 +36,9 @@ async function pullRepo() {
         }
 
         console.log('Fetching remote history...');
-        // 2. Make an authenticated API call to the backend pull endpoint
+        //Make an authenticated API call to the backend pull endpoint
         const response = await axios.get(
-            `${API_URL}/repo/pull/${repositoryId}`, // --- FIX: Use dynamic API_URL ---
+            `${API_URL}/repo/pull/${repositoryId}`, 
             { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -58,11 +52,8 @@ async function pullRepo() {
 
         console.log(`Found ${remoteCommits.length} commit(s). Downloading files...`);
 
-        // --- FIX #3: Don't remove existing local commits. Only add/update. ---
-        // Create COMMITS_PATH if it doesn't exist (no need to remove it first)
         await fs.mkdir(COMMITS_PATH, { recursive: true });
 
-        // Get existing local commit IDs to compare
         let localCommitIds = new Set();
         try {
             const existingCommitDirs = await fs.readdir(COMMITS_PATH);
@@ -81,7 +72,6 @@ async function pullRepo() {
 
         let newCommitsCount = 0;
 
-        // 4. Iterate through each commit from the server's response
         for (const commit of remoteCommits) {
             const commitDir = path.join(COMMITS_PATH, commit.commitId);
             const commitMetadataFile = path.join(commitDir, 'commit.json');
@@ -89,8 +79,6 @@ async function pullRepo() {
             // Check if commit already exists locally
             if (localCommitIds.has(commit.commitId)) {
                 console.log(`  - Commit ${commit.commitId.substring(0,8)} already exists locally. Checking for updates...`);
-                // For a simple pull, we can overwrite existing files to ensure latest version
-                // Or you could implement a more sophisticated diff/merge
             } else {
                 console.log(`  - New commit ${commit.commitId.substring(0,8)} found. Downloading...`);
                 newCommitsCount++;
@@ -112,19 +100,16 @@ async function pullRepo() {
                 }
             }
 
-            // Re-create the local commit.json metadata file
-            // --- FIX #4: Ensure commitMetadata aligns with what commit.js writes ---
             const commitMetadata = {
                 commitID: commit.commitId,
                 message: commit.message,
                 date: commit.timestamp,
-                files: commit.files.map(f => f.fileName), // Store just filenames
+                files: commit.files.map(f => f.fileName), 
                 previousCommitID: commit.previousCommitID || null, // Include previous commit ID if available from remote
             };
             await fs.writeFile(commitMetadataFile, JSON.stringify(commitMetadata, null, 2));
         }
 
-        // --- Update HEAD to point to the latest remote commit if any new commits were pulled ---
         if (remoteCommits.length > 0) {
             const latestRemoteCommit = remoteCommits[0]; // Assuming response is sorted by newest first from backend
             const headPath = path.join(LOCAL_REPO_PATH, 'HEAD');
