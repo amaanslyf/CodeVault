@@ -5,13 +5,11 @@ const path = require('path');
 const os = require('os');
 const dotenv = require('dotenv');
 
-// Load environment variables from the root .env file
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-// Construct the server URL dynamically
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 const API_URL = `http://localhost:${process.env.PORT || 3000}`;
 
-// --- FIX: The function is named 'loginUser' ---
 async function loginUser() {
   try {
     const answers = await inquirer.prompt([
@@ -19,7 +17,6 @@ async function loginUser() {
       { type: 'password', name: 'password', message: 'Enter your password:', mask: '*' },
     ]);
 
-    // Use the dynamic API_URL
     const response = await axios.post(`${API_URL}/login`, {
       email: answers.email,
       password: answers.password,
@@ -43,5 +40,4 @@ async function loginUser() {
   }
 }
 
-// --- FIX: The module exports the function named 'loginUser' ---
 module.exports = { loginUser };

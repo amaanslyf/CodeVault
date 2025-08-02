@@ -1,31 +1,28 @@
-// backend/controllers/commit.js (REPLACE FULL FILE)
-
 const fs = require('fs').promises;
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 async function commitRepo(message) {
-    // --- FIX: Consistent local repository folder name ---
     const repoPath = path.resolve(process.cwd(), '.codevault');
     const stagingPath = path.join(repoPath, 'staging');
     const commitsPath = path.join(repoPath, 'commits');
     const latestCommitPath = path.join(repoPath, 'HEAD'); // To track the latest commit easily
 
     try {
-        const commitID = uuidv4(); // Generate a unique commit ID
-        const commitDir = path.join(commitsPath, commitID); // Create a directory for the commit
+        const commitID = uuidv4(); 
+        const commitDir = path.join(commitsPath, commitID); 
 
-        await fs.mkdir(commitDir, { recursive: true }); // Ensure commit directory exists
+        await fs.mkdir(commitDir, { recursive: true }); 
 
         let filesToCommit = [];
         try {
-            filesToCommit = await fs.readdir(stagingPath); // Read files from staging area
+            filesToCommit = await fs.readdir(stagingPath); 
         } catch (err) {
             if (err.code === 'ENOENT') {
                 console.log('No changes to commit: Staging area is empty.');
                 return;
             }
-            throw err; // Re-throw other errors
+            throw err; 
         }
 
         if (filesToCommit.length === 0) {
@@ -33,13 +30,13 @@ async function commitRepo(message) {
             return;
         }
 
-        const committedFilesManifest = []; // To store details of files included in this commit
+        const committedFilesManifest = []; 
 
         for (const file of filesToCommit) {
             const sourceFilePath = path.join(stagingPath, file);
             const destinationFilePath = path.join(commitDir, file);
             await fs.copyFile(sourceFilePath, destinationFilePath);
-            committedFilesManifest.push(file); // Add filename to manifest
+            committedFilesManifest.push(file); 
         }
 
         // Create a commit file with the commit message, ID, date, and included files
@@ -48,25 +45,22 @@ async function commitRepo(message) {
             commitID,
             date: new Date().toISOString(),
             files: committedFilesManifest, // Store the list of files that were part of this commit
-            previousCommitID: null // We'll add logic to get this later for true history
+            previousCommitID: null 
         };
 
-        // If there's a HEAD (last commit), link it to this new commit
         try {
             const lastCommitID = await fs.readFile(latestCommitPath, 'utf8');
             commitMetadata.previousCommitID = lastCommitID.trim();
         } catch (readErr) {
-            // No previous commit, or file not found - first commit
+        
         }
 
         await fs.writeFile(path.join(commitDir, "commit.json"), JSON.stringify(commitMetadata, null, 2));
-
-        // --- NEW: Update HEAD to point to this new commit ---
         await fs.writeFile(latestCommitPath, commitID);
 
-        // --- FIX: Clear staging area contents, don't remove the directory itself ---
+        //Clear staging area contents, don't remove the directory itself ---
         for (const file of filesToCommit) {
-            await fs.unlink(path.join(stagingPath, file)); // Delete file from staging
+            await fs.unlink(path.join(stagingPath, file)); 
         }
         
         console.log(`✅ Changes committed successfully with ID: ${commitID.substring(0, 8)}`);
