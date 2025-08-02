@@ -1,5 +1,3 @@
-// frontend/src/components/dashboard/Dashboard.jsx (REPLACE FULL FILE)
-
 import React, { useState, useEffect } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
@@ -73,7 +71,7 @@ const Dashboard = () => {
               {suggestedRepositories.map(repo => (
                 <div
                   key={repo._id}
-                  className="repo-card clickable card" // Added 'card' utility class
+                  className="repo-card clickable card" 
                   onClick={() => handleRepoClick(repo._id)}
                 >
                   <h4 className="repo-card-title">{repo.name || 'Unnamed Repository'}</h4>
@@ -93,7 +91,7 @@ const Dashboard = () => {
               value={searchQuery}
               placeholder="Search your repositories..."
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="input-field search-input" // Used global input-field
+              className="input-field search-input" 
             />
           </div>
 
@@ -110,7 +108,7 @@ const Dashboard = () => {
               {filteredRepositories.map(repo => (
                 <div
                   key={repo._id}
-                  className="repo-card clickable card" // Added 'card' utility class
+                  className="repo-card clickable card" 
                   onClick={() => handleRepoClick(repo._id)}
                 >
                   <h4 className="repo-card-title">{repo.name || 'Unnamed Repository'}</h4>
