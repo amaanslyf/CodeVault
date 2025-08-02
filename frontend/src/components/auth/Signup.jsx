@@ -35,7 +35,6 @@ const Signup = () => {
   };
 
   return (
-    // --- NEW: Add the auth-page-wrapper div here ---
     <div className="auth-page-wrapper">
       <div className="login-wrapper">
         <div className="login-logo-container">

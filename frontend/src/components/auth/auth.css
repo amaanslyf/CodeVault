@@ -1,6 +1,4 @@
-/* frontend/src/components/auth/auth.css (REPLACE FULL FILE) */
 
-/* The unique background is now applied to a wrapper, not the global body */
 .auth-page-wrapper {
   /* MODIFIED: Adjusted linear-gradient colors for a darker, tech-themed feel */
   background: url('https://www.transparenttextures.com/patterns/stardust.png') repeat, linear-gradient(120deg, #1f2733, #3a475d);

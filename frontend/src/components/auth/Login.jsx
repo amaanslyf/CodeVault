@@ -1,4 +1,3 @@
-// frontend/src/components/auth/Login.jsx (REPLACE FULL FILE)
 
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
