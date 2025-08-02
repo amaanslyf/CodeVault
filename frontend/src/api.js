@@ -1,15 +1,12 @@
 import axios from 'axios';
 
-// 1. Create a new instance of axios with a custom configuration
+// Create a new instance of axios with a custom configuration
 const api = axios.create({
   // Set the base URL for all API requests.
-  // Now you only need to write '/login' or '/repo/create' instead of the full URL.
-  //baseURL: 'http://localhost:3002',
    baseURL: import.meta.env.VITE_APP_API_URL || 'http://localhost:3002', // For Vite
 });
 
-// 2. Use an interceptor to automatically attach the JWT to every request
-// This function runs before any request is sent.
+//Use an interceptor to automatically attach the JWT to every request
 api.interceptors.request.use(
   (config) => {
     // Get the token from localStorage
@@ -23,7 +20,6 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
-    // Handle any request errors
     return Promise.reject(error);
   }
 );
