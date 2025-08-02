@@ -1,5 +1,3 @@
-// frontend/src/components/repo/IssueItem.jsx (REPLACE FULL FILE)
-
 import React, { useState } from 'react';
 import './IssueItem.css';
 
@@ -7,9 +5,8 @@ const IssueItem = ({ issue, onIssueUpdate, onIssueDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(issue.title);
   const [editedDescription, setEditedDescription] = useState(issue.description);
-  const [error, setError] = useState(''); // General error for editing mode
+  const [error, setError] = useState(''); 
 
-  // Validation functions (similar to CreateIssue)
   const validateTitle = (value) => {
     if (!value.trim()) {
       return 'Issue title cannot be empty.';
@@ -84,7 +81,7 @@ const IssueItem = ({ issue, onIssueUpdate, onIssueDelete }) => {
               if (error) setError(''); // Clear error on typing
             }}
             className={`input-field ${validateDescription(editedDescription) ? 'input-error' : ''}`}
-            rows="3" // Default rows for textarea
+            rows="3"
           />
           <div className="edit-actions">
             <button onClick={handleSave} className="button-primary save-button">Save</button>
@@ -95,7 +92,6 @@ const IssueItem = ({ issue, onIssueUpdate, onIssueDelete }) => {
     );
   }
 
-  // --- Render the DEFAULT view ---
   return (
     <li className="issue-item">
       <div className="issue-status-icon">
