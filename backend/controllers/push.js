@@ -1,29 +1,23 @@
-// backend/controllers/push.js (REPLACE FULL FILE)
-
 const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
 const axios = require('axios');
 const FormData = require('form-data');
-const dotenv = require('dotenv'); // --- NEW: Import dotenv
+const dotenv = require('dotenv'); 
 
-// Load environment variables for this CLI command
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-// Construct the server URL dynamically
-const API_URL = `http://localhost:${process.env.PORT || 3000}`; // --- NEW: Use dynamic API_URL
+const API_URL = `http://localhost:${process.env.PORT || 3000}`; 
 
-// --- Define paths for local and global configuration ---
 const LOCAL_REPO_PATH = path.resolve(process.cwd(), '.codevault');
 const LOCAL_CONFIG_FILE = path.join(LOCAL_REPO_PATH, 'config.json');
 const COMMITS_PATH = path.join(LOCAL_REPO_PATH, 'commits');
 const GLOBAL_CONFIG_FILE = path.join(os.homedir(), '.codevault', 'config.json');
 
 
-// This is the main function for the 'push' command
 async function pushRepo() {
     try {
-        // 1. Read local and global config files to get repository ID and auth token
+
         let repositoryId, token;
         try {
             ({ repositoryId } = JSON.parse(await fs.readFile(LOCAL_CONFIG_FILE, 'utf8')));
@@ -33,7 +27,7 @@ async function pushRepo() {
                 console.error('Error: Not a CodeVault repository or you are not logged in. Please run "codevault login" and "codevault init".');
                 return;
             }
-            throw readErr; // Re-throw other errors
+            throw readErr; 
         }
 
         if (!repositoryId || !token) {
@@ -41,7 +35,7 @@ async function pushRepo() {
             return;
         }
 
-        // 2. Identify which commits need to be pushed
+        //dentify which commits need to be pushed
         let commitDirs = [];
         try {
             commitDirs = await fs.readdir(COMMITS_PATH);
@@ -53,7 +47,7 @@ async function pushRepo() {
             throw readErr;
         }
 
-        // Filter out non-directory entries (like .DS_Store on macOS)
+        // Filter out non-directory entries 
         const validCommitDirs = [];
         for (const dir of commitDirs) {
             const fullPath = path.join(COMMITS_PATH, dir);
@@ -73,7 +67,7 @@ async function pushRepo() {
         console.log(`Pushing ${commitDirs.length} commit(s) to remote...`);
 
 
-        // 3. Loop through each local commit and push it individually
+        // Loop through each local commit and push it individually
         for (const commitId of commitDirs) {
             const commitPath = path.join(COMMITS_PATH, commitId);
             const commitDetails = JSON.parse(await fs.readFile(path.join(commitPath, 'commit.json'), 'utf8'));
@@ -84,7 +78,6 @@ async function pushRepo() {
             formData.append('timestamp', commitDetails.date);
 
 
-            // 4. Attach all files from the commit to the FormData
             const filesInCommit = await fs.readdir(commitPath);
             for (const fileName of filesInCommit) {
                 if (fileName !== 'commit.json') { // Ensure commit.json itself isn't pushed as a file
@@ -95,24 +88,22 @@ async function pushRepo() {
             }
 
 
-            // 5. Make the authenticated API call to the backend push endpoint
+            //Make the authenticated API call to the backend push endpoint
             process.stdout.write(`   - Pushing commit ${commitId.substring(0, 8)}... `);
             await axios.post(
-                `${API_URL}/repo/push/${repositoryId}`, // --- FIX: Use dynamic API_URL ---
+                `${API_URL}/repo/push/${repositoryId}`, 
                 formData,
                 {
                     headers: {
-                        ...formData.getHeaders(), // Important for multipart/form-data
+                        ...formData.getHeaders(), 
                         'Authorization': `Bearer ${token}`
                     }
                 }
             );
             process.stdout.write('Done\n');
 
-            // --- OPTIONAL: After successful push, delete the local commit directory ---
-            // This is a simple way to prevent re-pushing. For a more robust solution,
-            // you'd track the last pushed commit ID in the local config.
-            // await fs.rm(commitPath, { recursive: true, force: true });
+            // After successful push, delete the local commit directory
+            await fs.rm(commitPath, { recursive: true, force: true });
         }
 
 
