@@ -13,11 +13,8 @@ const ProtectedRoute = ({ children }) => {
   const { currentUser } = useAuth();
   return currentUser ? children : <Navigate to="/auth" />;
 };
-
-// --- MODIFIED: Renamed to ProjectRoutes and removed BrowserRouter ---
 const ProjectRoutes = () => {
   return (
-    // The <BrowserRouter> wrapper has been removed from this file.
     <Routes>
       <Route path="/auth" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
@@ -34,4 +31,4 @@ const ProjectRoutes = () => {
   );
 };
 
-export default ProjectRoutes; // Export as default
+export default ProjectRoutes; 
