@@ -1,5 +1,3 @@
-// frontend/src/components/repo/ViewRepo.jsx (REPLACE FULL FILE)
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
