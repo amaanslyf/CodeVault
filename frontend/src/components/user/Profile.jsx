@@ -1,5 +1,3 @@
-// frontend/src/components/user/Profile.jsx (REPLACE FULL FILE)
-
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
@@ -47,7 +45,6 @@ const Profile = () => {
       setEditMode(false);
       setPassword("");
       setConfirmPassword("");
-      // Using console.log for success to be less intrusive than alert()
       console.log("Password updated successfully!"); 
     } catch (err) {
       setError(err.response?.data?.message || "Failed to update password");
@@ -105,7 +102,7 @@ const Profile = () => {
                 onChange={(e) => setPassword(e.target.value)} 
                 placeholder="New Password" 
                 required 
-                className="input-field" // Applied global input-field class
+                className="input-field" 
               />
               <input 
                 type="password" 
@@ -113,7 +110,7 @@ const Profile = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)} 
                 placeholder="Confirm New Password" 
                 required 
-                className="input-field" // Applied global input-field class
+                className="input-field" 
               />
               {error && <p className="error-message">{error}</p>}
               <div className="form-buttons">
