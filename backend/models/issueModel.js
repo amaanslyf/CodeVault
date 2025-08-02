@@ -21,7 +21,6 @@ const IssueSchema = new Schema(
       ref: "Repository",
       required: true,
     },
-    // --- NEW: Add an author field to track who created the issue ---
     author: {
       type: Schema.Types.ObjectId,
       ref: "User",

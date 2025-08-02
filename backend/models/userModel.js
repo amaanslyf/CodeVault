@@ -14,9 +14,9 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
-    // Note: Password is not required, allowing for potential future OAuth integration
+    
   },
-  // --- FIX: Correctly define arrays of ObjectIds ---
+  
   repositories: [{
     type: Schema.Types.ObjectId,
     ref: "Repository",
@@ -30,7 +30,7 @@ const UserSchema = new Schema({
     ref: "Repository",
   }],
 }, { 
-  // --- BEST PRACTICE: Enable timestamps ---
+
   timestamps: true 
 });
 

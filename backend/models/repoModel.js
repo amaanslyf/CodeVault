@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-// --- NEW: Define a sub-schema for commit metadata ---
 const CommitSchema = new Schema({
   commitId: { type: String, required: true },
   message: { type: String, required: true },
@@ -34,7 +33,6 @@ const RepositorySchema = new Schema(
         ref: "Issue",
       },
     ],
-    // --- MODIFIED: The 'content' field is replaced by a structured 'commits' array. ---
     commits: [CommitSchema], // This will store the history of pushes
   },
   {
