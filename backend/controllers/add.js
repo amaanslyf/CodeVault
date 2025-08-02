@@ -4,7 +4,7 @@ const fs = require('fs').promises; // Importing the file system module to handle
 const path = require('path');
 
 async function addRepo(filePath) {
-    // --- FIX: Ensure consistency with init.js for the local repo folder name ---
+    //Ensure consistency with init.js for the local repo folder name ---
     const repoPath = path.resolve(process.cwd(), '.codevault');
     const stagingPath = path.join(repoPath, 'staging'); // Path to the staging area inside the repository
 
@@ -14,7 +14,6 @@ async function addRepo(filePath) {
         // Handle adding all files if '.' is provided
         if (filePath === '.') {
             const filesInCurrentDir = await fs.readdir(process.cwd());
-            // Filter out the .codevault directory itself
             const filesToStage = filesInCurrentDir.filter(name => name !== '.codevault');
 
             for (const file of filesToStage) {
@@ -43,12 +42,12 @@ async function addRepo(filePath) {
                 console.error(`Error: File "${filePath}" not found.`);
                 return;
             }
-            
-            await fs.copyFile(sourcePath, destPath); // Copy the file to the staging area
+
+            await fs.copyFile(sourcePath, destPath);
             console.log(`✅ File ${fileName} added to staging area`);
         }
     } catch (err) {
-        console.error("Error adding file to staging area:", err.message); // Log any errors that occur during the file addition
+        console.error("Error adding file to staging area:", err.message);
     }
 }
 module.exports = { addRepo };
