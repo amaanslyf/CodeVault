@@ -160,7 +160,6 @@ module.exports = {
   getMe,
   signup,
   login,
-  getAllUsers,
   getUserProfile,
   updateUserProfile,
   deleteUserProfile,
