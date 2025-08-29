@@ -1,55 +1,353 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
-
-.file-list-container h4 {
-  font-size: 1.2em; /* Smaller heading for sub-section */
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: var(--color-text-primary);
-  border-bottom: 1px solid var(--color-border-primary);
-  padding-bottom: 8px;
+/* Body background with animated elements */
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 40px 20px;
+  position: relative;
+  overflow-x: hidden;
 }
 
+/* Animated background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: drift 20s linear infinite;
+  z-index: -1;
+}
+
+@keyframes drift {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-50px, -50px) rotate(360deg); }
+}
+
+/* Floating orbs */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+  backdrop-filter: blur(10px);
+  animation: float 6s ease-in-out infinite;
+  z-index: -1;
+}
+
+.orb:nth-child(1) {
+  width: 80px;
+  height: 80px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.orb:nth-child(2) {
+  width: 120px;
+  height: 120px;
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.orb:nth-child(3) {
+  width: 60px;
+  height: 60px;
+  bottom: 30%;
+  left: 70%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-20px) scale(1.1); }
+}
+
+/* Main container with glassmorphism */
+.file-list-container {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 32px;
+  margin: 0 auto 40px;
+  max-width: 600px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.file-list-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.6), 
+    transparent);
+}
+
+.file-list-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 48px rgba(0, 0, 0, 0.15),
+    0 6px 24px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Header styling */
+.file-list-container h4 {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 24px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.02em;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* File list styling */
 .file-list {
   list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
   padding: 0;
 }
 
 .file-item {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 16px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px dashed var(--color-border-secondary); /* Dashed border for subtlety */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out;
+  border-bottom: none;
+  margin: 0;
+}
+
+.file-item:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.file-item:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.file-item:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.file-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.1), 
+    transparent);
+  transition: left 0.6s;
+}
+
+.file-item:hover::before {
+  left: 100%;
+}
+
+.file-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(8px);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  margin: 0;
+  padding: 16px 20px;
 }
 
 .file-item:last-child {
   border-bottom: none;
 }
 
+/* File name styling with icon */
 .file-name {
-  font-size: 0.95em;
-  color: var(--color-text-primary);
-  word-break: break-all; /* Ensure long filenames wrap */
-  margin-right: 15px; /* Space before download link */
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: -0.01em;
+  margin-right: 15px;
+  word-break: break-all;
 }
 
+.file-name::before {
+  content: '📄';
+  font-size: 20px;
+  filter: grayscale(0.3);
+  transition: all 0.3s ease;
+}
+
+.file-item:hover .file-name::before {
+  transform: scale(1.2);
+  filter: grayscale(0);
+}
+
+/* Download link styling */
 .download-link {
-  color: var(--color-text-link); /* Global link color */
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.95);
   text-decoration: none;
-  font-size: 0.9em;
-  white-space: nowrap; /* Prevent download link from breaking */
-  transition: color 0.2s ease-in-out;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.download-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, 
+    rgba(255, 255, 255, 0.1), 
+    rgba(255, 255, 255, 0.3));
+  transform: scale(0);
+  transition: transform 0.3s ease;
+  border-radius: 12px;
+}
+
+.download-link:hover::before {
+  transform: scale(1);
 }
 
 .download-link:hover {
-  color: var(--color-text-link); /* Already defined in index.css, but good to re-iterate */
-  text-decoration: underline;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
 }
 
-/* For empty state messages */
+.download-link:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Empty state styling */
 .empty-state-message {
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
   text-align: center;
-  padding: 20px;
-  color: var(--color-text-secondary);
-  font-size: 0.95em;
+  padding: 32px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  position: relative;
+  margin: 0;
+}
+
+.empty-state-message::before {
+  content: '📂';
+  display: block;
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+  filter: grayscale(0.5);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sparkle effect keyframes */
+@keyframes sparkle {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+/* Ripple effect keyframes */
+@keyframes ripple {
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  body {
+    padding: 20px 15px;
+  }
+
+  .file-list-container {
+    margin: 0 auto 30px;
+    padding: 24px;
+    border-radius: 20px;
+  }
+  
+  .file-item {
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .download-link {
+    align-self: flex-end;
+  }
+  
+  .file-list-container h4 {
+    font-size: 18px;
+  }
+
+  .file-name {
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
 }

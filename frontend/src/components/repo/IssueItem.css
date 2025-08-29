@@ -1,88 +1,529 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
+/* Body background with animated elements */
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 40px 20px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Animated background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: drift 25s linear infinite;
+  z-index: -1;
+}
+
+@keyframes drift {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-60px, -60px) rotate(360deg); }
+}
+
+/* Floating orbs */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.25));
+  backdrop-filter: blur(15px);
+  animation: float 8s ease-in-out infinite;
+  z-index: -1;
+}
+
+.orb:nth-child(1) {
+  width: 100px;
+  height: 100px;
+  top: 15%;
+  left: 8%;
+  animation-delay: 0s;
+}
+
+.orb:nth-child(2) {
+  width: 140px;
+  height: 140px;
+  top: 65%;
+  right: 12%;
+  animation-delay: 3s;
+}
+
+.orb:nth-child(3) {
+  width: 80px;
+  height: 80px;
+  bottom: 25%;
+  left: 75%;
+  animation-delay: 6s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+  50% { transform: translateY(-25px) scale(1.05) rotate(180deg); }
+}
+
+/* Issue Item Container */
 .issue-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px;
-  border-bottom: 1px solid var(--color-border-primary); /* Use global border */
+  padding: 24px;
   list-style: none;
-  background-color: var(--color-bg-primary); /* Ensure white background for each item */
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  margin: 16px 0;
+  border-radius: 20px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: slideInUp 0.6s ease-out;
+}
+
+.issue-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.4), 
+    transparent);
+}
+
+.issue-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.08), 
+    transparent);
+  transition: left 0.8s ease;
+}
+
+.issue-item:hover::after {
+  left: 100%;
+}
+
+.issue-item:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.18),
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .issue-item:last-child {
   border-bottom: none;
 }
 
+/* Status Icon */
 .issue-status-icon {
-  margin-right: 15px;
-  font-size: 1.2em; /* Make status icon slightly larger */
+  margin-right: 20px;
+  font-size: 1.4em;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
+.issue-item:hover .issue-status-icon {
+  transform: scale(1.1) rotate(5deg);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Issue Details */
 .issue-details {
   flex-grow: 1;
 }
 
 .issue-title {
   font-weight: 600;
-  color: var(--color-text-primary);
-  font-size: 1.1em;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.15em;
+  margin-bottom: 6px;
+  display: block;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
 }
 
 .issue-meta {
-  font-size: 0.85em;
-  color: var(--color-text-secondary);
-  margin-top: 4px;
+  font-size: 0.88em;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* Issue Actions */
 .issue-actions {
   display: flex;
-  gap: 10px;
-  flex-shrink: 0; /* Prevent buttons from shrinking */
-  margin-left: 15px; /* Space between details and actions */
+  gap: 12px;
+  flex-shrink: 0;
+  margin-left: 20px;
 }
 
-/* Specific styling for small buttons, used by Edit/Delete actions */
+/* Small buttons for Edit/Delete actions */
 .small-button {
-  padding: 5px 10px;
-  font-size: 0.85em;
-  border-radius: var(--border-radius); /* Use global border-radius */
+  padding: 10px 18px;
+  font-size: 0.88em;
+  border-radius: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.small-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, 
+    rgba(255, 255, 255, 0.1), 
+    rgba(255, 255, 255, 0.2));
+  transform: scale(0);
+  transition: transform 0.3s ease;
+  border-radius: 14px;
+}
+
+.small-button:hover::before {
+  transform: scale(1);
+}
+
+/* Primary button (Edit) */
+.button-primary {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Danger button (Delete) */
+.button-danger {
+  background: rgba(239, 68, 68, 0.8);
+  color: white;
+  border: 1px solid rgba(239, 68, 68, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.button-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+  background: rgba(220, 38, 38, 0.9);
+  border-color: rgba(220, 38, 38, 1);
+}
+
+/* Secondary button (Cancel) */
+.button-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.button-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* --- Styles for the Editing Form --- */
 .issue-item.editing {
-  background-color: var(--color-bg-secondary); /* Light background for editing */
-  border: 1px solid var(--color-border-secondary);
-  border-radius: var(--border-radius);
-  flex-direction: column; /* Stack content in edit mode */
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(25px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  flex-direction: column;
   align-items: flex-start;
+  padding: 32px;
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.15),
+    0 8px 24px rgba(0, 0, 0, 0.1),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  animation: expandEdit 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .issue-edit-form {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Space between form elements */
+  gap: 18px;
 }
 
-/* Input fields use .input-field from index.css */
-/* Error styles for inputs use .input-error and .input-error-message from index.css */
+/* Input field styles */
+.input-field {
+  width: 100%;
+  padding: 16px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  font-size: 1em;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  font-family: inherit;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
 
+.input-field::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 0 0 3px rgba(255, 255, 255, 0.1),
+    0 6px 20px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.input-field.input-error {
+  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.05);
+  box-shadow: 
+    0 0 0 3px rgba(239, 68, 68, 0.1),
+    0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+/* Textarea specific */
+textarea.input-field {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* Error message */
+.error-message {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.9em;
+  margin: 0;
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-left: 4px solid rgba(239, 68, 68, 0.8);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+}
+
+.edit-form-error {
+  margin-bottom: 12px;
+  animation: shakeError 0.5s ease-out;
+}
+
+/* Edit Actions */
 .edit-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  width: 100%; /* Ensure buttons span full width */
-  margin-top: 10px;
+  gap: 16px;
+  width: 100%;
+  margin-top: 20px;
 }
 
-/* Buttons for saving/canceling use global button styles */
 .save-button, .cancel-button {
-  /* Inherits styles from .button-primary and .button-secondary */
-  padding: 8px 15px; /* Adjust padding for these specific buttons */
+  padding: 12px 24px;
+  font-size: 0.9em;
+  border-radius: 16px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(15px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-/* Specific error message for the edit form */
-.edit-form-error {
-  /* Uses .error-message from index.css, just ensures specific margin for context */
-  margin-bottom: 10px;
+.save-button::before,
+.cancel-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, 
+    rgba(255, 255, 255, 0.1), 
+    rgba(255, 255, 255, 0.2));
+  transform: scale(0);
+  transition: transform 0.3s ease;
+  border-radius: 16px;
+}
+
+.save-button:hover::before,
+.cancel-button:hover::before {
+  transform: scale(1);
+}
+
+.save-button {
+  background: rgba(34, 197, 94, 0.8);
+  color: white;
+  border: 1px solid rgba(34, 197, 94, 0.9);
+}
+
+.save-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+  background: rgba(22, 163, 74, 0.9);
+}
+
+/* Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes expandEdit {
+  from {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Sparkle effect keyframes */
+@keyframes sparkle {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+/* Ripple effect keyframes */
+@keyframes ripple {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  body {
+    padding: 20px 15px;
+  }
+
+  .issue-item {
+    padding: 20px;
+    border-radius: 18px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .issue-status-icon {
+    margin-right: 0;
+    margin-bottom: 8px;
+    align-self: flex-start;
+  }
+
+  .issue-details {
+    width: 100%;
+  }
+
+  .issue-actions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .issue-item.editing {
+    padding: 24px;
+  }
+
+  .edit-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .save-button, .cancel-button {
+    width: 100%;
+    padding: 14px 24px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .small-button {
+    padding: 8px 14px;
+    font-size: 0.82em;
+  }
+
+  .issue-actions {
+    gap: 8px;
+  }
+
+  .issue-title {
+    font-size: 1.05em;
+  }
+
+  .issue-meta {
+    font-size: 0.82em;
+  }
 }
