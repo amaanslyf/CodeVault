@@ -1,97 +1,526 @@
+/* Import Jersey 10 font */
+@import url('https://fonts.googleapis.com/css2?family=Jersey+10&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Color variables matching auth.css with solid colors for navbar */
+:root {
+  /* Primary Colors (purple gradient with glassmorphism) */
+  --primary-bg: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --secondary-bg: rgba(255, 255, 255, 0.15);
+  --accent-bg: rgba(248, 244, 255, 0.1);
+  --header-bg: rgba(75, 0, 130, 0.95);
+  
+  /* Black glassmorphism colors for navbar */
+  --navbar-bg: rgba(0, 0, 0, 0.6);
+  --navbar-item-bg: rgba(0, 0, 0, 0.4);
+  --navbar-item-hover: rgba(0, 0, 0, 0.5);
+  --navbar-item-active: rgba(0, 0, 0, 0.7);
+  --navbar-border: rgba(255, 255, 255, 0.1);
+  --navbar-glass-shadow: rgba(0, 0, 0, 0.3);
+  
+  /* Gradient Colors (updated with glassmorphism accents) */
+  --gradient-primary: linear-gradient(135deg, rgba(229, 230, 229, 0.8) 10%, rgba(170, 93, 247, 0.9) 60%, rgba(45, 27, 61, 0.8) 100%);
+  --gradient-secondary: linear-gradient(135deg, rgba(69, 9, 88, 0.9) 0%, rgba(106, 27, 153, 0.9) 50%, rgba(26, 11, 46, 0.9) 100%);
+  --gradient-accent: linear-gradient(135deg, rgba(78, 11, 97, 0.8) 0%, rgba(186, 104, 200, 0.8) 50%, rgba(74, 20, 140, 0.8) 100%);
+  
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.9);
+  --text-accent: #e1bee7;
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --text-dark: #1a1a2e;
+  
+  /* Border & Shadow Colors */
+  --border-primary: rgba(255, 255, 255, 0.2);
+  --border-accent: rgba(225, 190, 231, 0.5);
+  --shadow-primary: rgba(74, 20, 140, 0.4);
+  --shadow-secondary: rgba(118, 75, 162, 0.3);
+  
+  /* Interactive Colors */
+  --hover-bg: rgba(255, 255, 255, 0.1);
+  --active-bg: rgba(116, 15, 144, 0.2);
+  --error-bg: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%);
+}
+
+/* Navbar Container with black glassmorphism */
 .navbar-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
-  background-color: #24292e; /* Dark background, typical for header navbars */
-  color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px 30px;
+  background: var(--navbar-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--navbar-border);
+  color: var(--text-primary);
+  box-shadow: 
+    0 8px 32px var(--navbar-glass-shadow),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0 0 24px 24px;
+  margin-bottom: 20px;
+  font-family: 'Inter', sans-serif;
 }
 
+.navbar-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    var(--text-accent), 
+    transparent);
+  opacity: 0.6;
+}
+
+/* Navbar Left Section */
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
+  animation: slideInLeft 0.6s ease-out;
 }
 
 .navbar-logo-link {
-  display: flex; /* To align image properly */
+  display: flex;
   align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--navbar-item-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--navbar-border);
+  box-shadow: 
+    0 4px 16px var(--navbar-glass-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.navbar-logo-link:hover {
+  transform: translateY(-2px);
+  background: var(--navbar-item-hover);
+  box-shadow: 
+    0 8px 25px var(--navbar-glass-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(225, 190, 231, 0.3);
 }
 
 .navbar-logo {
-  height: 40px; /* Adjust size as needed */
+  height: 40px;
   width: auto;
+  filter: brightness(1.1) contrast(1.1) drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+  transition: all 0.3s ease;
+}
+
+.navbar-logo:hover {
+  filter: brightness(1.3) contrast(1.2) drop-shadow(0 0 20px rgba(225, 190, 231, 0.5));
+  transform: scale(1.05);
 }
 
 .navbar-welcome {
   margin: 0;
-  font-size: 1.1em;
-  font-weight: 400;
-  color: #c9d1d9; /* Slightly lighter text for contrast */
+  font-size: 1.2em;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--text-primary), var(--text-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: slideInLeft 0.6s ease-out 0.2s both;
+  font-family: 'Jersey 10', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
+/* Navbar Right Section */
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 20px; /* Space between links/buttons */
+  gap: 16px;
+  animation: slideInRight 0.6s ease-out;
 }
 
+/* Navbar Links with black glassmorphism */
 .navbar-link {
-  color: white;
+  color: var(--text-secondary);
   text-decoration: none;
   font-weight: 500;
-  padding: 5px 0;
-  transition: color 0.2s ease-in-out;
+  font-size: 14px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--navbar-item-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--navbar-border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 12px var(--navbar-glass-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Inter', sans-serif;
+}
+
+.navbar-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 600ms;
+}
+
+.navbar-link:hover::before {
+  left: 100%;
 }
 
 .navbar-link:hover {
-  color: #8b949e; /* Lighter on hover */
+  color: var(--text-primary);
+  background: var(--navbar-item-hover);
+  box-shadow: 
+    0 8px 20px var(--navbar-glass-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  border-color: rgba(225, 190, 231, 0.3);
+  text-shadow: 0 0 15px rgba(225, 190, 231, 0.6);
 }
 
+/* Active link styling */
+.navbar-link.active {
+  background: var(--navbar-item-active);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: 
+    0 8px 20px var(--navbar-glass-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(225, 190, 231, 0.4);
+}
+
+/* Navbar Button with black glassmorphism */
 .navbar-button {
-  background-color: #0366d6; /* Blue button, like GitHub primary */
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 15px;
-  font-size: 1em;
+  background: var(--gradient-primary);
+  border: 1px solid var(--navbar-border);
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 
+    0 4px 16px var(--shadow-primary),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 600ms;
+}
+
+.navbar-button:hover::before {
+  left: 100%;
 }
 
 .navbar-button:hover {
-  background-color: #005cc5; /* Darker blue on hover */
+  background: var(--gradient-secondary);
+  box-shadow: 0 8px 25px var(--shadow-primary);
+  transform: translateY(-2px);
+  border-color: var(--border-accent);
 }
 
-/* Basic responsiveness for smaller screens (e.g., mobile) */
+.navbar-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--shadow-primary);
+}
+
+/* Special styling for logout button */
+.navbar-button.logout {
+  background: var(--error-bg);
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+}
+
+.navbar-button.logout::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+}
+
+.navbar-button.logout:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.95) 0%, rgba(220, 38, 38, 0.95) 100%);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+/* Animations */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Mobile Dropdown Menu with black glassmorphism */
+.mobile-menu-toggle {
+  display: none;
+  background: var(--navbar-item-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--navbar-border);
+  color: var(--text-primary);
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 4px 12px var(--navbar-glass-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu-toggle:hover {
+  background: var(--navbar-item-hover);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 6px 16px var(--navbar-glass-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--navbar-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--navbar-border);
+  border-top: none;
+  border-radius: 0 0 24px 24px;
+  padding: 20px;
+  box-shadow: 
+    0 8px 32px var(--navbar-glass-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-menu.open {
+  display: block;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Responsive design */
 @media (max-width: 768px) {
   .navbar-container {
-    flex-direction: column;
-    padding: 15px 15px;
+    padding: 12px 20px;
+    border-radius: 0 0 20px 20px;
+    position: relative;
   }
 
-  .navbar-left,
-  .navbar-right {
-    width: 100%;
-    justify-content: center;
-    margin-bottom: 10px; /* Space between sections */
+  .navbar-left {
+    gap: 12px;
   }
 
   .navbar-welcome {
-    display: none; /* Hide welcome text on small screens */
+    font-size: 1em;
+    display: none; /* Hide on mobile for space */
   }
 
   .navbar-right {
-    flex-wrap: wrap; /* Allow links to wrap */
+    display: none; /* Hide desktop menu on mobile */
+  }
+
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .navbar-right.mobile-active {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    background: var(--navbar-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--navbar-border);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 
+      0 8px 32px var(--navbar-glass-shadow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    min-width: 150px;
+    animation: slideDown 0.3s ease-out;
   }
 
   .navbar-link,
   .navbar-button {
-    font-size: 0.9em;
-    padding: 6px 12px;
+    font-size: 13px;
+    padding: 10px 16px;
+    width: 100%;
+    text-align: center;
   }
+
+  .navbar-logo {
+    height: 35px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 10px 15px;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .navbar-left {
+    gap: 8px;
+  }
+
+  .navbar-logo {
+    height: 30px;
+  }
+
+  .navbar-welcome {
+    display: none;
+  }
+
+  .navbar-link,
+  .navbar-button {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+}
+
+/* Scroll effect with black glassmorphism */
+.navbar-container.scrolled {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(225, 190, 231, 0.3);
+}
+
+/* Focus states for accessibility */
+.navbar-link:focus,
+.navbar-button:focus {
+  outline: 2px solid var(--border-accent);
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .navbar-container {
+    display: none;
+  }
+}
+
+/* Enhanced reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .navbar-left,
+  .navbar-right,
+  .navbar-container,
+  .navbar-link,
+  .navbar-button {
+    animation: none;
+  }
+  
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Additional black glassmorphism enhancements */
+.navbar-logo-link,
+.navbar-link,
+.navbar-button,
+.mobile-menu-toggle {
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
