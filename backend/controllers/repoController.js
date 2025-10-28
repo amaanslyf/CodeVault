@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
-const path = require('path'); 
+const path = require('path');
 const Repository = require('../models/repoModel');
 const User = require('../models/userModel');
 const Issue = require('../models/issueModel');
 const { s3, S3_BUCKET } = require('../config/aws-config');
-
 
 async function createRepository(req, res) {
   const { name, description, visibility } = req.body;
@@ -43,17 +42,14 @@ async function getAllRepositories(req, res) {
 
 async function getPublicRepositories(req, res) {
   try {
-    const userId = req.user._id; // Get the logged-in user's ID from the auth token
-
-    
+    const userId = req.user._id;
     const repositories = await Repository.find({
       visibility: true,
       owner: { $ne: userId },
     })
-      .populate('owner', 'username') 
-      .sort({ createdAt: -1 }) // Show the newest public repos first
-      .limit(10); //  Limit the number of suggestion
-
+      .populate('owner', 'username')
+      .sort({ createdAt: -1 })
+      .limit(10);
     res.json(repositories);
   } catch (error) {
     console.error('Error fetching public repositories:', error);
@@ -118,6 +114,7 @@ async function updateRepositoryById(req, res) {
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+
 async function toggleVisibilityById(req, res) {
   const { id } = req.params;
   try {
@@ -133,22 +130,19 @@ async function toggleVisibilityById(req, res) {
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+
 async function deleteRepositoryById(req, res) {
   const { id: repoId } = req.params;
-
   try {
     const repository = await Repository.findById(repoId);
     if (!repository) {
       return res.status(404).json({ message: 'Repository not found' });
     }
 
-  
     await Issue.deleteMany({ repository: repoId });
 
-    //Delete all files associated with the repository from s3
     const s3Prefix = `repos/${repoId}/`;
     const listedObjects = await s3.listObjectsV2({ Bucket: S3_BUCKET, Prefix: s3Prefix }).promise();
-
     if (listedObjects.Contents.length > 0) {
       const deleteParams = {
         Bucket: S3_BUCKET,
@@ -160,22 +154,39 @@ async function deleteRepositoryById(req, res) {
     }
 
     await User.findByIdAndUpdate(repository.owner, { $pull: { repositories: repository._id } });
-
     await Repository.findByIdAndDelete(repoId);
-
     res.json({ message: 'Repository and all associated issues and files deleted successfully' });
-
   } catch (error) {
     console.error('Error deleting repository:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 }
 
+// ✅ FIXED: Check for duplicate commits before pushing
 async function pushCommit(req, res) {
   const { id: repoId } = req.params;
   const { commitId, message, timestamp } = req.body;
   const files = req.files;
+
   try {
+    // Check if commit already exists in the repository
+    const repository = await Repository.findById(repoId);
+    if (!repository) {
+      return res.status(404).json({ message: 'Repository not found' });
+    }
+
+    // Check if this commitId already exists
+    const existingCommit = repository.commits.find(commit => commit.commitId === commitId);
+    if (existingCommit) {
+      console.log(`Commit ${commitId} already exists. Skipping duplicate push.`);
+      return res.status(200).json({ 
+        message: 'Commit already exists', 
+        commitId,
+        duplicate: true 
+      });
+    }
+
+    // Upload files to S3
     for (const file of files) {
       const s3Params = {
         Bucket: S3_BUCKET,
@@ -185,17 +196,24 @@ async function pushCommit(req, res) {
       };
       await s3.upload(s3Params).promise();
     }
-    const newCommit = { commitId, message, timestamp, author: req.user._id };
+
+    // Add the new commit to the repository
+    const newCommit = { 
+      commitId, 
+      message, 
+      timestamp, 
+      author: req.user._id 
+    };
+
     const updatedRepository = await Repository.findByIdAndUpdate(
       repoId,
       { $push: { commits: newCommit } },
       { new: true }
     );
-    if (!updatedRepository) {
-      return res.status(404).json({ message: 'Repository not found' });
-    }
+
     console.log(`Successfully pushed commit ${commitId} to repository ${repoId}`);
     res.status(200).json({ message: 'Push successful', commitId });
+
   } catch (error) {
     console.error('Error during push operation:', error);
     res.status(500).json({ message: 'Internal server error during push' });
@@ -209,29 +227,34 @@ async function pullRepoData(req, res) {
     if (!repository) {
       return res.status(404).json({ message: 'Repository not found' });
     }
+
     const commitsData = [];
     for (const commit of repository.commits) {
       const s3Prefix = `repos/${repoId}/${commit.commitId}/`;
       const s3Objects = await s3.listObjectsV2({ Bucket: S3_BUCKET, Prefix: s3Prefix }).promise();
+
       const filesData = [];
       if (s3Objects.Contents) {
         for (const s3Object of s3Objects.Contents) {
           const params = { Bucket: S3_BUCKET, Key: s3Object.Key, Expires: 300 };
           const downloadUrl = await s3.getSignedUrlPromise('getObject', params);
           filesData.push({
-            fileName: path.basename(s3Object.Key),
+            name: path.basename(s3Object.Key),
             url: downloadUrl,
           });
         }
       }
+
       commitsData.push({
         commitId: commit.commitId,
         message: commit.message,
         timestamp: commit.timestamp,
+        author: commit.author,
         files: filesData,
       });
     }
-    res.status(200).json(commitsData);
+
+    res.status(200).json({ commits: commitsData });
   } catch (error) {
     console.error('Error during pull operation:', error);
     res.status(500).json({ message: 'Internal server error during pull' });
