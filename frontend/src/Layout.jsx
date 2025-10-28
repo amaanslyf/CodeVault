@@ -1,18 +1,14 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Navbar from './components/Navbar'; // Adjust path if needed
-
-
+import Navbar from './components/Navbar';
+import Box from '@mui/material/Box';
 
 const Layout = () => {
   return (
-    <>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Navbar />
-      <main className="main-content-area">
-        {/* The <Outlet> component renders the matched child route's component */}
-        <Outlet />
-      </main>
-    </>
+      <Outlet />
+    </Box>
   );
 };
 

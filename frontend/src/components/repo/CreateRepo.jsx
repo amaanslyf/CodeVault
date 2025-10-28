@@ -1,161 +1,199 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
-import "./CreateRepo.css";
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import Paper from '@mui/material/Paper';
+import CircularProgress from '@mui/material/CircularProgress';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import PublicIcon from '@mui/icons-material/Public';
+import LockIcon from '@mui/icons-material/Lock';
 
 const CreateRepo = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    visibility: false, // false = private, true = public
-  });
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [visibility, setVisibility] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [nameError, setNameError] = useState(''); 
+  const [nameError, setNameError] = useState('');
 
-  const validateName = (name) => {
-    if (!name.trim()) {
+  const validateName = (value) => {
+    if (!value.trim()) {
       return "Repository name cannot be empty.";
     }
-    
-    if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
       return "Name can only contain letters, numbers, dashes, and underscores.";
     }
-    if (name.length < 3) {
+    if (value.length < 3) {
       return "Name must be at least 3 characters long.";
     }
-    if (name.length > 100) { 
+    if (value.length > 100) {
       return "Name cannot exceed 100 characters.";
     }
-    return ''; 
+    return '';
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear name-specific error when user starts typing again
-    if (name === 'name' && nameError) {
-      setNameError('');
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    setName(value);
+    
+    const validationError = validateName(value);
+    setNameError(validationError);
+    if (!validationError) {
+      setError('');
     }
   };
 
-  const handleVisibilityChange = (isPublic) => {
-    setFormData(prev => ({
-      ...prev,
-      visibility: isPublic
-    }));
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+  };
+
+  const handleVisibilityChange = (e) => {
+    setVisibility(e.target.checked);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    setError('');
+    setNameError('');
 
-    const nameValidationError = validateName(formData.name);
-    if (nameValidationError) {
-      setNameError(nameValidationError);
+    const validationError = validateName(name);
+    if (validationError) {
+      setNameError(validationError);
       return;
     }
 
     setIsLoading(true);
-    setError(''); // Clear general error
-    setNameError(''); // Clear specific error
 
     try {
-      const response = await api.post('/repo/create', formData);
-
-      if (response.data?.repository?._id) {
-        navigate(`/repo/viewrepo/${response.data.repository._id}`);
-      } else {
-        navigate("/");
-      }
+      const requestData = {
+        name: name.trim(),
+        description: description.trim(),
+        visibility: visibility
+      };
+      
+      await api.post('/repo/create', requestData);
+      navigate('/dashboard');
+      
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Failed to create repository';
-      if (errorMessage.includes('A repository with this name already exists')) {
+      const errorMessage = err.response?.data?.message || 
+                          err.message || 
+                          'Failed to create repository. Please try again.';
+      
+      if (errorMessage.includes('already exists')) {
         setNameError(errorMessage);
       } else {
         setError(errorMessage);
       }
-      console.error('Repository creation error:', err);
+      
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="create-repo-wrapper">
-      <div className="create-repo-container">
-        <h1>Create a new repository</h1>
-        
-        {/* General error message at the top if not specific to a field */}
-        {error && <div className="error-message general-error">{error}</div>}
+    <Container maxWidth="md">
+      <Box sx={{ mt: 4, mb: 4 }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+          <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
+            Create a New Repository
+          </Typography>
+          <Typography variant="body1" color="text.secondary" mb={3}>
+            A repository contains all project files, including the revision history.
+          </Typography>
 
-        <form onSubmit={handleSubmit} className="repo-form">
-          <div className="form-group">
-            <label htmlFor="name">Repository name<span className="required-star">*</span></label>
-            <input
-              type="text"
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+              {error}
+            </Alert>
+          )}
+
+          <Box component="form" onSubmit={handleSubmit} noValidate>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
               id="name"
+              label="Repository Name"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="e.g., my-awesome-project"
-              className={nameError ? 'input-error' : ''} 
+              autoFocus
+              value={name}
+              onChange={handleNameChange}
+              disabled={isLoading}
+              error={!!nameError}
+              helperText={nameError || "Use only letters, numbers, dashes, and underscores"}
             />
-            {nameError && <p className="input-error-message">{nameError}</p>} {/* Display name-specific error */}
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="description">Description (optional)</label>
-            <textarea 
+
+            <TextField
+              margin="normal"
+              fullWidth
               id="description"
+              label="Description (optional)"
               name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows="3"
-              placeholder="A short description of your repository"
-            ></textarea>
-          </div>
-          
-          <div className="form-group">
-            <label>Visibility</label>
-            <div className="radio-group">
-              <label className="radio-label">
-                <input
-                  type="radio"
-                  name="visibility"
-                  checked={!formData.visibility} // false = private
-                  onChange={() => handleVisibilityChange(false)}
-                />
-                Private
-                <span className="radio-description">Only you can see this repository.</span>
-              </label>
-              <label className="radio-label">
-                <input
-                  type="radio"
-                  name="visibility"
-                  checked={formData.visibility} // true = public
-                  onChange={() => handleVisibilityChange(true)}
-                />
-                Public
-                <span className="radio-description">Anyone can see this repository.</span>
-              </label>
-            </div>
-          </div>
-          
-          <button 
-            type="submit" 
-            disabled={isLoading || !formData.name.trim() || nameError} 
-            className="create-repo-btn"
-          >
-            {isLoading ? 'Creating repository...' : 'Create repository'}
-          </button>
-        </form>
-      </div>
-    </div>
+              multiline
+              rows={4}
+              value={description}
+              onChange={handleDescriptionChange}
+              disabled={isLoading}
+              helperText="Brief description of your repository"
+            />
+
+            <Box sx={{ mt: 3, mb: 2, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={visibility}
+                    onChange={handleVisibilityChange}
+                    disabled={isLoading}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box display="flex" alignItems="center" gap={1}>
+                    {visibility ? <PublicIcon color="success" /> : <LockIcon />}
+                    <Typography>
+                      {visibility ? "Public Repository" : "Private Repository"}
+                    </Typography>
+                  </Box>
+                }
+              />
+              <Typography variant="caption" color="text.secondary" display="block" mt={1}>
+                {visibility 
+                  ? "Anyone can see this repository. You choose who can commit."
+                  : "You choose who can see and commit to this repository."}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                fullWidth
+                disabled={isLoading}
+              >
+                {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Create Repository'}
+              </Button>
+              <Button
+                variant="outlined"
+                size="large"
+                onClick={() => navigate('/dashboard')}
+                disabled={isLoading}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
+    </Container>
   );
 };
 

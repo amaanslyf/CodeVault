@@ -6,188 +6,257 @@ import CommitHistory from './CommitHistory';
 import FileList from './FileList';
 import IssueList from './IssueList';
 import CreateIssue from './CreateIssue';
-import './ViewRepo.css';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import Paper from '@mui/material/Paper';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Chip from '@mui/material/Chip';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import PublicIcon from '@mui/icons-material/Public';
+import LockIcon from '@mui/icons-material/Lock';
+import CodeIcon from '@mui/icons-material/Code';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import HistoryIcon from '@mui/icons-material/History';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const ViewRepo = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-
   const [repository, setRepository] = useState(null);
   const [commits, setCommits] = useState([]);
   const [issues, setIssues] = useState([]);
   const [selectedCommit, setSelectedCommit] = useState(null);
-  const [activeTab, setActiveTab] = useState('Code');
+  const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const isOwner = repository && currentUser === repository.owner?._id;
 
   const fetchRepoData = useCallback(async () => {
     setLoading(true);
     setError(null);
+    
     try {
-      const [repoDetailsResponse, repoCommitsResponse, repoIssuesResponse] = await Promise.all([
-        api.get(`/repo/viewrepo/${id}`),
-        api.get(`/repo/pull/${id}`),
-        api.get(`/issue/all/${id}`)
+      // Fetch repository details first
+      const repoResponse = await api.get(`/repo/viewrepo/${id}`);
+      const repoData = repoResponse.data;
+      setRepository(repoData);
+
+      // ✅ FIX: Check access - deny ONLY if repo is private AND user is not owner
+      if (!repoData.visibility && currentUser !== repoData.owner?._id) {
+        setError("This is a private repository. You don't have access.");
+        setLoading(false);
+        return;
+      }
+
+      // If access is granted, fetch commits and issues
+      const [commitsResponse, issuesResponse] = await Promise.all([
+        api.get(`/repo/pull/${id}`).catch(() => ({ data: { commits: [] } })),
+        api.get(`/issue/all/${id}`).catch(() => ({ data: [] })),
       ]);
-      setRepository(repoDetailsResponse.data);
-      setIssues(repoIssuesResponse.data);
-      const sortedCommits = repoCommitsResponse.data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      setCommits(sortedCommits);
-      if (sortedCommits.length > 0) {
-        setSelectedCommit(sortedCommits[0]);
-      }
+
+      setCommits(commitsResponse.data.commits || []);
+      setIssues(issuesResponse.data || []);
+      
     } catch (err) {
+      console.error('Error fetching repository data:', err);
       if (err.response?.status === 404) {
-        setError('Repository not found. It may have been deleted.');
+        setError('Repository not found.');
       } else if (err.response?.status === 403) {
-        setError('Access Denied. You do not have permission to view this private repository.');
+        setError('Access denied. You do not have permission to view this repository.');
       } else {
-        setError('An error occurred while fetching repository data.');
+        setError(err.response?.data?.message || 'Failed to load repository');
       }
-      console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, currentUser]);
 
   useEffect(() => {
     fetchRepoData();
   }, [fetchRepoData]);
 
-  const handleCommitSelect = (commit) => setSelectedCommit(commit);
-
-  const handleIssueCreated = (newIssue) => {
-    setIssues(prevIssues => [newIssue, ...prevIssues]);
+  const handleDeleteRepository = async () => {
+    try {
+      await api.delete(`/repo/delete/${id}`);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Error deleting repository:', err);
+      setError(err.response?.data?.message || 'Failed to delete repository');
+      setDeleteDialogOpen(false);
+    }
   };
-  
+
   const handleToggleVisibility = async () => {
     try {
-      const response = await api.patch(`/repo/toggle/${id}`);
-      setRepository(response.data.repository);
-      console.log(`Repository visibility successfully changed to ${response.data.repository.visibility ? 'Public' : 'Private'}.`);
+      await api.patch(`/repo/toggle/${id}`);
+      setRepository(prev => ({ ...prev, visibility: !prev.visibility }));
     } catch (err) {
-      alert(`Error updating visibility: ${err.response?.data?.message || 'An unknown error occurred'}`);
-    }
-  };
-  
-  const handleDeleteRepository = async () => {
-    if (window.confirm('Are you sure you want to delete this repository? This action cannot be undone.')) {
-      try {
-        await api.delete(`/repo/delete/${id}`);
-        console.log('Repository deleted successfully.');
-        navigate('/');
-      } catch (err) {
-        alert(`Failed to delete repository: ${err.response?.data?.message}`);
-      }
+      console.error('Error toggling visibility:', err);
+      setError(err.response?.data?.message || 'Failed to update visibility');
     }
   };
 
-  const handleIssueUpdate = async (issueId, updateData) => {
-    try {
-      const response = await api.put(`/issue/update/${issueId}`, updateData);
-      setIssues(prevIssues => prevIssues.map(issue => 
-        issue._id === issueId ? response.data : issue
-      ));
-    } catch (err) {
-      alert(`Failed to update issue: ${err.response?.data?.message || 'An error occurred'}`);
-    }
+  const handleIssueCreated = (newIssue) => {
+    setIssues(prev => [newIssue, ...prev]);
   };
 
-  const handleIssueDelete = async (issueId) => {
-    if (window.confirm('Are you sure you want to delete this issue?')) {
-      try {
-        await api.delete(`/issue/delete/${issueId}`);
-        setIssues(prevIssues => prevIssues.filter(issue => issue._id !== issueId));
-        console.log('Issue deleted successfully.');
-      } catch (err) {
-        alert(`Failed to delete issue: ${err.response?.data?.message || 'An error occurred'}`);
-      }
-    }
+  const handleIssueUpdate = (updatedIssue) => {
+    setIssues(prev => prev.map(issue => 
+      issue._id === updatedIssue._id ? updatedIssue : issue
+    ));
   };
 
-  if (loading) return <div className="loading-message">Loading repository...</div>;
-  if (error) return <div className="error-message">{error}</div>;
-  if (!repository) return <div className="not-found-message">Repository not found</div>; // Changed class name
+  const handleIssueDelete = (deletedIssueId) => {
+    setIssues(prev => prev.filter(issue => issue._id !== deletedIssueId));
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
+        <Button variant="contained" onClick={() => navigate('/dashboard')} sx={{ mt: 2 }}>
+          Back to Dashboard
+        </Button>
+      </Container>
+    );
+  }
+
+  if (!repository) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Alert severity="info">Repository not found</Alert>
+      </Container>
+    );
+  }
 
   return (
-    <div className="page-container repository-details-page"> {/* Applied global page-container */}
-      <div className="repo-header">
-        <h1>{repository.name}</h1>
-        <span className={`visibility-badge ${repository.visibility ? 'public' : 'private'}`}>
-          {repository.visibility ? 'Public' : 'Private'}
-        </span>
-      </div>
-      <p className="repo-owner-info">Owner: {repository.owner?.username || 'Unknown'}</p>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3}>
+          <Box>
+            <Box display="flex" alignItems="center" gap={2} mb={1}>
+              <Typography variant="h4" component="h1" fontWeight="bold">
+                {repository.name}
+              </Typography>
+              <Chip
+                icon={repository.visibility ? <PublicIcon /> : <LockIcon />}
+                label={repository.visibility ? "Public" : "Private"}
+                color={repository.visibility ? "success" : "default"}
+                size="small"
+              />
+            </Box>
+            <Typography variant="body1" color="text.secondary" mb={1}>
+              {repository.description || "No description provided"}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Owner: {repository.owner?.username || "Unknown"}
+            </Typography>
+          </Box>
 
-      <div className="repo-tabs">
-        <button className={`tab-button ${activeTab === 'Code' ? 'active' : ''}`} onClick={() => setActiveTab('Code')}>
-          Code
-        </button>
-        <button className={`tab-button ${activeTab === 'Issues' ? 'active' : ''}`} onClick={() => setActiveTab('Issues')}>
-          Issues ({issues.length})
-        </button>
-        {isOwner && (
-          <button className={`tab-button ${activeTab === 'Settings' ? 'active' : ''}`} onClick={() => setActiveTab('Settings')}>
-            Settings
-          </button>
-        )}
-      </div>
+          {isOwner && (
+            <Box display="flex" gap={1}>
+              <Button
+                variant="outlined"
+                onClick={handleToggleVisibility}
+                startIcon={repository.visibility ? <LockIcon /> : <PublicIcon />}
+              >
+                Make {repository.visibility ? "Private" : "Public"}
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => setDeleteDialogOpen(true)}
+                startIcon={<DeleteIcon />}
+              >
+                Delete
+              </Button>
+            </Box>
+          )}
+        </Box>
 
-      <div className="tab-content">
-        {activeTab === 'Code' && (
-          <div className="repo-content-layout">
-            <div className="files-view card"> {/* Applied card utility class */}
-              <h2>Files</h2>
-              <p className="sub-heading">Showing files from commit: <strong>{selectedCommit ? selectedCommit.message : 'None'}</strong></p>
-              <FileList files={selectedCommit?.files} />
-            </div>
-            <div className="history-view card"> {/* Applied card utility class */}
-              <h2>Commit History</h2>
-              <CommitHistory commits={commits} onCommitSelect={handleCommitSelect} />
-            </div>
-          </div>
-        )}
+        <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tab icon={<CodeIcon />} label="Code" iconPosition="start" />
+          <Tab icon={<BugReportIcon />} label={`Issues (${issues.length})`} iconPosition="start" />
+          <Tab icon={<HistoryIcon />} label={`Commits (${commits.length})`} iconPosition="start" />
+        </Tabs>
 
-        {activeTab === 'Issues' && (
-          <div className="issues-tab-content card"> {/* Applied card utility class */}
-            <CreateIssue repoId={id} onIssueCreated={handleIssueCreated} />
-            <hr className="divider" /> {/* Added a class for styling */}
-            <IssueList 
-              issues={issues} 
-              onIssueUpdate={handleIssueUpdate} 
-              onIssueDelete={handleIssueDelete} 
-            />
-          </div>
-        )}
+        <Box sx={{ mt: 3 }}>
+          {activeTab === 0 && (
+            <Box>
+              <Typography variant="h6" gutterBottom fontWeight="bold">
+                Files
+              </Typography>
+              {selectedCommit ? (
+                <Box>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => setSelectedCommit(null)}
+                    sx={{ mb: 2 }}
+                  >
+                    ← Back to Commits
+                  </Button>
+                  <FileList files={selectedCommit.files} />
+                </Box>
+              ) : (
+                <CommitHistory commits={commits} onCommitSelect={setSelectedCommit} />
+              )}
+            </Box>
+          )}
 
-        {activeTab === 'Settings' && isOwner && (
-          <div className="repo-settings card"> {/* Applied card utility class */}
-            <h3>General Settings</h3>
-            <div className="settings-section">
-              <h4>Change Visibility</h4>
-              <p>This repository is currently <strong className="current-visibility">{repository.visibility ? 'Public' : 'Private'}</strong>.</p>
-              <p className="settings-description">
-                {repository.visibility ? 'Private repositories can only be seen by you.' : 'Public repositories can be seen by anyone.'}
-              </p>
-              <button onClick={handleToggleVisibility} className="button-primary"> {/* Used global button class */}
-                Make {repository.visibility ? 'Private' : 'Public'}
-              </button>
-            </div>
-            <hr className="settings-divider" />
-            <div className="settings-section danger-zone">
-              <h4>Danger Zone</h4>
-              <p className="settings-description">These actions are irreversible. Please be certain.</p>
-              <button onClick={handleDeleteRepository} className="button-danger"> {/* Used global button class */}
-                Delete This Repository
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+          {activeTab === 1 && (
+            <Box>
+              {isOwner && <CreateIssue repoId={id} onIssueCreated={handleIssueCreated} />}
+              <IssueList
+                issues={issues}
+                onIssueUpdate={handleIssueUpdate}
+                onIssueDelete={handleIssueDelete}
+              />
+            </Box>
+          )}
+
+          {activeTab === 2 && (
+            <CommitHistory commits={commits} onCommitSelect={setSelectedCommit} />
+          )}
+        </Box>
+      </Paper>
+
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Delete Repository?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete "{repository.name}"? This action cannot be undone.
+            All commits, files, and issues will be permanently deleted.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDeleteRepository} color="error" variant="contained">
+            Delete Repository
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 

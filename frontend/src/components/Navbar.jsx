@@ -1,9 +1,13 @@
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../authContext";
-import "./navbar.css";
-import logo from "../assets/codevault_icon.png";
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import CodeIcon from '@mui/icons-material/Code';
 
 const Navbar = () => {
   const { currentUser, setCurrentUser } = useAuth();
@@ -13,43 +17,53 @@ const Navbar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     setCurrentUser(null);
-    navigate("/auth");
+    navigate("/login");
   };
 
   return (
-    <nav className="navbar-container">
-      <div className="navbar-left">
-        <Link to={currentUser ? "/" : "/auth"} className="navbar-logo-link">
-          <img src={logo} alt="CodeVault Logo" className="navbar-logo" />
-        </Link>
-        {currentUser && <h3 className="navbar-welcome">Welcome to CodeVault</h3>}
-      </div>
+    <AppBar position="sticky" elevation={1}>
+      <Toolbar>
+        <IconButton
+          edge="start"
+          color="inherit"
+          component={Link}
+          to="/"
+          sx={{ mr: 2 }}
+        >
+          <CodeIcon fontSize="large" />
+        </IconButton>
+        
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          CodeVault
+        </Typography>
 
-      <div className="navbar-right">
         {currentUser ? (
-          <>
-            <Link to="/createrepo" className="navbar-link">
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button color="inherit" component={Link} to="/dashboard">
+              Dashboard
+            </Button>
+            <Button color="inherit" component={Link} to="/create-repo">
               Create Repository
-            </Link>
-            <Link to="/profile" className="navbar-link">
+            </Button>
+            <Button color="inherit" component={Link} to="/profile">
               Profile
-            </Link>
-            <button onClick={handleLogout} className="navbar-button">
+            </Button>
+            <Button color="inherit" onClick={handleLogout}>
               Logout
-            </button>
-          </>
+            </Button>
+          </Box>
         ) : (
-          <>
-            <Link to="/auth" className="navbar-link">
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button color="inherit" component={Link} to="/login">
               Login
-            </Link>
-            <Link to="/signup" className="navbar-link">
+            </Button>
+            <Button color="inherit" component={Link} to="/signup">
               Sign Up
-            </Link>
-          </>
+            </Button>
+          </Box>
         )}
-      </div>
-    </nav>
+      </Toolbar>
+    </AppBar>
   );
 };
 

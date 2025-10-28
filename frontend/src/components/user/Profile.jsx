@@ -1,16 +1,36 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
-import "./profile.css";
+import { useAuth } from "../../authContext"; // Import useAuth
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import Paper from '@mui/material/Paper';
+import CircularProgress from '@mui/material/CircularProgress';
+import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import PersonIcon from '@mui/icons-material/Person';
+import EmailIcon from '@mui/icons-material/Email';
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { setCurrentUser } = useAuth(); // Get setCurrentUser from context
   const [userDetails, setUserDetails] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const fetchUserDetails = useCallback(async () => {
     try {
@@ -31,113 +51,198 @@ const Profile = () => {
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
+
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Passwords do not match!");
       return;
     }
+
     if (password.length < 6) {
       setError("Password must be at least 6 characters long.");
       return;
     }
-    
+
     try {
       await api.put(`/updateProfile/${userDetails._id}`, { password });
-      setEditMode(false);
+      setSuccess("Password updated successfully!");
       setPassword("");
       setConfirmPassword("");
-      console.log("Password updated successfully!"); 
+      setEditMode(false);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update password");
+      console.error("Error updating password:", err);
+      setError(err.response?.data?.message || "Failed to update password.");
     }
   };
 
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete your account? This action is permanent and cannot be undone.")) {
-      try {
-        await api.delete(`/deleteProfile/${userDetails._id}`);
-        localStorage.clear();
-        navigate('/auth');
-      } catch (err) {
-        console.error("Error deleting profile: ", err);
-        setError("Failed to delete your account. Please try again.");
-      }
+  const handleDeleteAccount = async () => {
+    try {
+      await api.delete(`/deleteProfile/${userDetails._id}`);
+      
+      // Clear authentication state
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      setCurrentUser(null);
+      
+      // Navigate to login page
+      navigate("/login");
+    } catch (err) {
+      console.error("Error deleting account:", err);
+      setError(err.response?.data?.message || "Failed to delete account.");
+      setDeleteDialogOpen(false);
     }
   };
 
   if (loading) {
-    // Using global loading-message class
     return (
-      <div className="page-container">
-        <div className="loading-message">Loading profile...</div>
-      </div>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <CircularProgress />
+      </Box>
     );
   }
-  
+
   if (!userDetails) {
-    // Using global error-message class
     return (
-      <div className="page-container">
-        <div className="error-message">{error || "Could not load profile."}</div>
-      </div>
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Alert severity="error">Unable to load profile. Please try again.</Alert>
+      </Container>
     );
   }
 
   return (
-    <div className="page-container profile-page-wrapper"> {/* Applied global page-container */}
-      <div className="user-profile-card card"> {/* Applied global card utility class */}
-        <h3>Account Settings</h3>
-        <div className="profile-info">
-          <p><strong>Username:</strong> {userDetails.username}</p>
-          <p><strong>Email:</strong> {userDetails.email}</p>
-        </div>
-        <hr className="divider" /> {/* Applied global divider class name for consistency */}
-        <div className="profile-actions">
-          <h4>Manage Account</h4>
-          {editMode ? (
-            <form onSubmit={handleUpdatePassword} className="password-form">
-              <p>Enter a new password for your account.</p>
-              <input 
-                type="password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                placeholder="New Password" 
-                required 
-                className="input-field" 
-              />
-              <input 
-                type="password" 
-                value={confirmPassword} 
-                onChange={(e) => setConfirmPassword(e.target.value)} 
-                placeholder="Confirm New Password" 
-                required 
-                className="input-field" 
-              />
-              {error && <p className="error-message">{error}</p>}
-              <div className="form-buttons">
-                <button type="submit" className="button-primary"> {/* Applied global button-primary */}
-                  Update Password
-                </button>
-                <button type="button" onClick={() => setEditMode(false)} className="button-secondary"> {/* New button-secondary or similar */}
-                  Cancel
-                </button>
-              </div>
-            </form>
-          ) : (
-            <button className="button-primary" onClick={() => setEditMode(true)}> {/* Applied global button-primary */}
-              Change Password
-            </button>
+    <Container maxWidth="md">
+      <Box sx={{ mt: 4, mb: 4 }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+          <Box display="flex" alignItems="center" mb={3}>
+            <Avatar sx={{ width: 80, height: 80, mr: 3, bgcolor: 'primary.main' }}>
+              <PersonIcon sx={{ fontSize: 50 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" component="h1" fontWeight="bold">
+                {userDetails.username}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                <EmailIcon sx={{ fontSize: 16, mr: 0.5, verticalAlign: 'middle' }} />
+                {userDetails.email}
+              </Typography>
+            </Box>
+          </Box>
+
+          <Divider sx={{ my: 3 }} />
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
+              {error}
+            </Alert>
           )}
-        </div>
-        <hr className="divider" /> {/* Applied global divider class name for consistency */}
-        <div className="danger-zone card"> {/* Applied global card utility class & danger-zone */}
-          <h4>Danger Zone</h4>
-          <p>This action is irreversible. Please be certain.</p>
-          <button className="button-danger" onClick={handleDelete}> {/* Applied global button-danger */}
-            Delete Account
-          </button>
-        </div>
-      </div>
-    </div>
+
+          {success && (
+            <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess("")}>
+              {success}
+            </Alert>
+          )}
+
+          <Typography variant="h5" gutterBottom fontWeight="bold">
+            Account Settings
+          </Typography>
+
+          {!editMode ? (
+            <Box>
+              <Typography variant="body1" color="text.secondary" mb={2}>
+                Manage your account security and preferences
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={() => setEditMode(true)}
+                sx={{ mr: 2 }}
+              >
+                Change Password
+              </Button>
+            </Box>
+          ) : (
+            <Box component="form" onSubmit={handleUpdatePassword} noValidate>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="New Password"
+                type="password"
+                id="password"
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="confirmPassword"
+                label="Confirm New Password"
+                type="password"
+                id="confirmPassword"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+                <Button type="submit" variant="contained">
+                  Update Password
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    setEditMode(false);
+                    setPassword("");
+                    setConfirmPassword("");
+                    setError("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </Box>
+          )}
+
+          <Divider sx={{ my: 4 }} />
+
+          <Box sx={{ bgcolor: '#fff5f5', p: 3, borderRadius: 2, border: '1px solid #ffcccc' }}>
+            <Typography variant="h6" color="error" gutterBottom fontWeight="bold">
+              Danger Zone
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mb={2}>
+              Once you delete your account, there is no going back. All your repositories and data will be permanently deleted.
+            </Typography>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => setDeleteDialogOpen(true)}
+            >
+              Delete Account
+            </Button>
+          </Box>
+        </Paper>
+      </Box>
+
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Delete Account?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you absolutely sure you want to delete your account? This action cannot be undone.
+            All your repositories, commits, and issues will be permanently deleted.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDeleteAccount} color="error" variant="contained">
+            Delete Permanently
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 

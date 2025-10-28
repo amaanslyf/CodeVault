@@ -11,24 +11,27 @@ import Profile from './components/user/Profile';
 
 const ProtectedRoute = ({ children }) => {
   const { currentUser } = useAuth();
-  return currentUser ? children : <Navigate to="/auth" />;
+  console.log('ProtectedRoute - currentUser:', currentUser);
+  return currentUser ? children : <Navigate to="/login" replace />;
 };
+
 const ProjectRoutes = () => {
+  console.log('ProjectRoutes rendering');
+  
   return (
     <Routes>
-      <Route path="/auth" element={<Login />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-
-      <Route element={<Layout />}>
-        <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/createrepo" element={<ProtectedRoute><CreateRepo /></ProtectedRoute>} />
-        <Route path="/repo/viewrepo/:id" element={<ProtectedRoute><ViewRepo /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      
+      <Route path="/" element={<Layout />}>
+        <Route index element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="create-repo" element={<ProtectedRoute><CreateRepo /></ProtectedRoute>} />
+        <Route path="repo/:id" element={<ProtectedRoute><ViewRepo /></ProtectedRoute>} />
+        <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       </Route>
-
-      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };
 
-export default ProjectRoutes; 
+export default ProjectRoutes;

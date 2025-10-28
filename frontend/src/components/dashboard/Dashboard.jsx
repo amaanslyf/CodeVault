@@ -1,7 +1,23 @@
 import React, { useState, useEffect } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
-import "./dashboard.css";
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
+import FolderIcon from '@mui/icons-material/Folder';
+import PublicIcon from '@mui/icons-material/Public';
+import LockIcon from '@mui/icons-material/Lock';
+import Chip from '@mui/material/Chip';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -22,17 +38,18 @@ const Dashboard = () => {
 
       setLoading(true);
       setError(null);
+
       try {
         const [userReposResponse, suggestedReposResponse] = await Promise.all([
           api.get(`/repo/user/${userId}`),
-          api.get("/repo/public")
+          api.get("/repo/public"),
         ]);
 
-        setRepositories(Array.isArray(userReposResponse.data) ? userReposResponse.data : []);
-        setSuggestedRepositories(Array.isArray(suggestedReposResponse.data) ? suggestedReposResponse.data : []);
+        setRepositories(userReposResponse.data || []);
+        setSuggestedRepositories(suggestedReposResponse.data || []);
       } catch (err) {
         console.error("Error fetching data:", err);
-        setError(err.response?.data?.message || "Failed to load data.");
+        setError(err.response?.data?.message || "Failed to load repositories");
       } finally {
         setLoading(false);
       }
@@ -41,85 +58,137 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  const filteredRepositories = repositories.filter(repo =>
-    repo?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredRepositories = repositories.filter((repo) =>
+    repo.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const handleRepoClick = (repoId) => {
-    navigate(`/repo/viewrepo/${repoId}`);
-  };
 
   if (loading) {
     return (
-      <div className="page-container"> {/* Use global page container */}
-        <div className="loading-message">Loading repositories...</div>
-      </div>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
     );
   }
 
   return (
-    <div className="page-container"> {/* Use global page container */}
-      <section id="dashboard">
-        <aside className="dashboard-sidebar">
-          <h3>Suggested Repositories</h3>
-          {error ? (
-            <div className="error-message">{error}</div>
-          ) : suggestedRepositories.length === 0 ? (
-            <div className="empty-state-message">No suggested repositories found.</div>
-          ) : (
-            <div className="suggested-repos-list">
-              {suggestedRepositories.map(repo => (
-                <div
-                  key={repo._id}
-                  className="repo-card clickable card" 
-                  onClick={() => handleRepoClick(repo._id)}
-                >
-                  <h4 className="repo-card-title">{repo.name || 'Unnamed Repository'}</h4>
-                  <p className="repo-card-description">{repo.description || 'No description'}</p>
-                  <span className="repo-card-owner">Owner: {repo.owner?.username || 'Unknown'}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </aside>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Box mb={4}>
+        <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
+          Your Repositories
+        </Typography>
+        
+        <TextField
+          fullWidth
+          placeholder="Search repositories..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ mt: 2, mb: 3 }}
+        />
 
-        <main className="dashboard-main-content">
-          <div className="main-header">
-            <h2>Your Repositories</h2>
-            <input
-              type="text"
-              value={searchQuery}
-              placeholder="Search your repositories..."
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="input-field search-input" 
-            />
-          </div>
+        {filteredRepositories.length === 0 ? (
+          <Alert severity="info">
+            No repositories found. Create your first repository!
+          </Alert>
+        ) : (
+          <Grid container spacing={3}>
+            {filteredRepositories.map((repo) => (
+              <Grid item xs={12} sm={6} md={4} key={repo._id}>
+                <Card elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Box display="flex" alignItems="center" mb={1}>
+                      <FolderIcon color="primary" sx={{ mr: 1 }} />
+                      <Typography variant="h6" component="h3" fontWeight="bold">
+                        {repo.name || "Unnamed Repository"}
+                      </Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" mb={2}>
+                      {repo.description || "No description"}
+                    </Typography>
+                    <Chip
+                      icon={repo.visibility ? <PublicIcon /> : <LockIcon />}
+                      label={repo.visibility ? "Public" : "Private"}
+                      size="small"
+                      color={repo.visibility ? "success" : "default"}
+                    />
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      fullWidth
+                      onClick={() => navigate(`/repo/${repo._id}`)}
+                    >
+                      View Repository
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
 
-          {error ? (
-            <div className="error-message">{error}</div>
-          ) : filteredRepositories.length === 0 ? (
-            <div className="empty-state-message">
-              {searchQuery
-                ? "No repositories match your search."
-                : "You don't have any repositories yet. Start by creating one!"}
-            </div>
-          ) : (
-            <div className="user-repos-grid">
-              {filteredRepositories.map(repo => (
-                <div
-                  key={repo._id}
-                  className="repo-card clickable card" 
-                  onClick={() => handleRepoClick(repo._id)}
-                >
-                  <h4 className="repo-card-title">{repo.name || 'Unnamed Repository'}</h4>
-                  <p className="repo-card-description">{repo.description || 'No description'}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </main>
-      </section>
-    </div>
+      <Box mt={6}>
+        <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
+          Suggested Public Repositories
+        </Typography>
+
+        {suggestedRepositories.length === 0 ? (
+          <Alert severity="info">No public repositories available.</Alert>
+        ) : (
+          <Grid container spacing={3} mt={1}>
+            {suggestedRepositories.map((repo) => (
+              <Grid item xs={12} sm={6} md={4} key={repo._id}>
+                <Card elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Box display="flex" alignItems="center" mb={1}>
+                      <FolderIcon color="primary" sx={{ mr: 1 }} />
+                      <Typography variant="h6" component="h3" fontWeight="bold">
+                        {repo.name || "Unnamed Repository"}
+                      </Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" mb={2}>
+                      {repo.description || "No description"}
+                    </Typography>
+                    <Chip
+                      icon={<PublicIcon />}
+                      label="Public"
+                      size="small"
+                      color="success"
+                    />
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => navigate(`/repo/${repo._id}`)}
+                    >
+                      View Repository
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
+    </Container>
   );
 };
 

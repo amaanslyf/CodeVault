@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import api from '../../api';
-import './CreateIssue.css';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import Paper from '@mui/material/Paper';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const CreateIssue = ({ repoId, onIssueCreated }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [generalError, setGeneralError] = useState(''); 
-  const [titleError, setTitleError] = useState('');     // For specific title errors
-  const [descriptionError, setDescriptionError] = useState(''); //For specific description errors
+  const [generalError, setGeneralError] = useState('');
+  const [titleError, setTitleError] = useState('');
+  const [descriptionError, setDescriptionError] = useState('');
 
-  // Validation functions
   const validateTitle = (value) => {
     if (!value.trim()) {
       return 'Issue title cannot be empty.';
@@ -34,88 +39,106 @@ const CreateIssue = ({ repoId, onIssueCreated }) => {
     return '';
   };
 
-  const handleTitleChange = (e) => {
-    setTitle(e.target.value);
-    if (titleError) setTitleError(''); 
-  };
-
-  const handleDescriptionChange = (e) => {
-    setDescription(e.target.value);
-    if (descriptionError) setDescriptionError('');
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const newTitleError = validateTitle(title);
-    const newDescriptionError = validateDescription(description);
-
-    if (newTitleError || newDescriptionError) {
-      setTitleError(newTitleError);
-      setDescriptionError(newDescriptionError);
-      setGeneralError('Please fix the errors in the form.'); 
-      return;
-    }
-
-    setIsLoading(true);
     setGeneralError('');
     setTitleError('');
     setDescriptionError('');
 
+    const titleValidationError = validateTitle(title);
+    const descriptionValidationError = validateDescription(description);
+
+    if (titleValidationError) {
+      setTitleError(titleValidationError);
+      return;
+    }
+
+    if (descriptionValidationError) {
+      setDescriptionError(descriptionValidationError);
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      const response = await api.post(`/issue/create/${repoId}`, { title, description });
+      const response = await api.post(`/issue/create/${repoId}`, {
+        title,
+        description,
+      });
+      console.log('Issue created:', response.data);
       onIssueCreated(response.data);
       setTitle('');
       setDescription('');
     } catch (err) {
-      setGeneralError(err.response?.data?.message || 'Failed to create issue.');
-      console.error('Issue creation error:', err);
+      console.error('Error creating issue:', err);
+      setGeneralError(
+        err.response?.data?.message || 'Failed to create issue. Please try again.'
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="create-issue-container"> {/* The parent ViewRepo.jsx applies the .card class */}
-      <h3>Submit a New Issue</h3>
-      <form onSubmit={handleSubmit} className="create-issue-form">
-        {generalError && <div className="error-message general-form-error">{generalError}</div>}
-        
-        <div className="form-group">
-          <label htmlFor="issue-title">Issue Title<span className="required-star">*</span></label>
-          <input
-            id="issue-title"
-            type="text"
-            placeholder="A concise summary of the issue"
-            value={title}
-            onChange={handleTitleChange}
-            className={`input-field ${titleError ? 'input-error' : ''}`}
-          />
-          {titleError && <p className="input-error-message">{titleError}</p>}
-        </div>
+    <Paper elevation={2} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+      <Typography variant="h6" gutterBottom fontWeight="bold">
+        Create New Issue
+      </Typography>
 
-        <div className="form-group">
-          <label htmlFor="issue-description">Description<span className="required-star">*</span></label>
-          <textarea
-            id="issue-description"
-            placeholder="Leave a detailed description of the issue"
-            value={description}
-            onChange={handleDescriptionChange}
-            rows="5" // Set a default number of rows for textarea
-            className={`input-field ${descriptionError ? 'input-error' : ''}`}
-          />
-          {descriptionError && <p className="input-error-message">{descriptionError}</p>}
-        </div>
+      {generalError && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {generalError}
+        </Alert>
+      )}
 
-        <button 
-          type="submit" 
+      <Box component="form" onSubmit={handleSubmit} noValidate>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="title"
+          label="Issue Title"
+          name="title"
+          autoFocus
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            setTitleError('');
+          }}
           disabled={isLoading}
-          className="button-primary" 
+          error={!!titleError}
+          helperText={titleError}
+        />
+
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="description"
+          label="Issue Description"
+          name="description"
+          multiline
+          rows={4}
+          value={description}
+          onChange={(e) => {
+            setDescription(e.target.value);
+            setDescriptionError('');
+          }}
+          disabled={isLoading}
+          error={!!descriptionError}
+          helperText={descriptionError}
+        />
+
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{ mt: 2 }}
+          disabled={isLoading}
         >
-          {isLoading ? 'Submitting...' : 'Submit new issue'}
-        </button>
-      </form>
-    </div>
+          {isLoading ? <CircularProgress size={24} /> : 'Create Issue'}
+        </Button>
+      </Box>
+    </Paper>
   );
 };
 
