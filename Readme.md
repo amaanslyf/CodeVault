@@ -1,498 +1,747 @@
-# 🚀 CodeVault - A Git-like Version Control System for Beginners
+# CodeVault 🔐
 
-<div align="center">
+## A Beginner-Friendly Version Control System
 
-![CodeVault Logo](https://img.shields.io/badge/CodeVault-v1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-ISC-green.svg)
-![Node.js](https://img.shields.io/badge/node.js-v18+-blue.svg)
-![React](https://img.shields.io/badge/react-v19.1.0-blue.svg)
-![MongoDB](https://img.shields.io/badge/mongodb-v6.17.0-green.svg)
-
-**A beginner-friendly version control system with a modern web interface and familiar Git-like commands**
-
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [API Documentation](#-api-documentation) • [Contributing](#-contributing)
-
-</div>
+CodeVault is an easy-to-use version control system designed for beginners who want to learn how Git and version control work without the complexity. It features both a **web interface** and a **CLI tool** for managing repositories, commits, and file versioning.
 
 ---
 
-## 📖 About
+## 📖 Table of Contents
 
-**CodeVault** is a comprehensive version control system designed specifically for beginners who want to learn Git concepts without the complexity. It provides both a **beautiful web interface** and **familiar command-line tools** that mirror Git functionality, making it the perfect stepping stone for developers new to version control.
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Installation & Setup](#installation--setup)
+- [Running Locally](#running-locally)
+- [Deployed Application](#deployed-application)
+- [CLI Usage](#cli-usage)
+- [Project Structure](#project-structure)
+- [API Endpoints](#api-endpoints)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
 
-### 🎯 Why CodeVault?
+---
 
-- **🎓 Beginner-Friendly**: Simplified Git concepts with clear visual feedback
-- **🌐 Modern Web Interface**: Intuitive dashboard with Material UI components  
-- **⚡ Terminal Integration**: Git-like commands (`codevault init`, `add`, `commit`, `push`)
-- **📁 Repository Management**: Create, clone, and manage repositories with ease
-- **🔍 Visual Commit History**: Track changes with an interactive commit timeline
-- **🐛 Issue Tracking**: Built-in bug and feature request management
-- **🔐 Access Control**: Public and private repository support
-- **☁️ Cloud Storage**: AWS S3 integration for file storage
-- **🚀 Real-time Updates**: Socket.io for live collaboration features
+## 🎯 Overview
+
+CodeVault simplifies version control by providing:
+- **Web Application**: User-friendly browser interface with Material-UI components
+- **CLI Tool**: Command-line interface for developers who prefer terminal-based workflows
+- **Cloud Storage**: AWS S3 integration for file storage
+- **Database Management**: MongoDB for data persistence
+- **Authentication**: JWT-based secure authentication
+- **Issue Tracking**: Built-in issue management system
+- **Repository Management**: Public and private repositories with access control
 
 ---
 
 ## ✨ Features
 
-### 🎮 Web Interface
-- **Modern Dashboard**: Overview of all your repositories with search and filtering
-- **Repository Browser**: Explore files, commits, and issues in a GitHub-like interface
-- **Interactive Terminal**: Execute Git-like commands directly in the browser
-- **User Management**: Complete authentication system with profiles
-- **Issue Tracking**: Create, assign, and manage project issues
-- **Real-time Notifications**: Live updates for repository activities
+### Core Features
+- ✅ **User Authentication**: Signup, Login, Profile Management
+- ✅ **Repository Management**: Create, View, Update, Delete repositories
+- ✅ **File Version Control**: Add, Commit, Push, Pull, Revert operations
+- ✅ **Issue Tracking**: Create and manage issues within repositories
+- ✅ **Public/Private Repositories**: Control repository visibility
+- ✅ **Commit History**: View and manage commit history
+- ✅ **Multi-user Support**: Collaborate with other users
+- ✅ **Cloud Storage**: All files stored securely on AWS S3
+- ✅ **Material-UI Design**: Modern, responsive user interface
 
-### 💻 Command Line Interface
-```bash
-# Initialize a new repository
-codevault init
+### Advanced Features
+- 🔄 **Duplicate Commit Prevention**: Prevents duplicate commits during push operations
+- 🔒 **Access Control**: Private repositories only accessible to owner
+- 📱 **Public Repository Discovery**: View and access public repositories
+- 🗂️ **Staging Area**: Stage files before committing (similar to Git)
+- 📊 **Dashboard**: Overview of your repositories and suggested public repositories
 
-# Add files to staging area
-codevault add filename.txt
-codevault add .
+---
 
-# Commit changes
-codevault commit "Your commit message"
+## 🛠️ Tech Stack
 
-# Push to remote repository
-codevault push
+### Frontend
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| **React** | 18.x | UI Framework |
+| **Vite** | 5.x | Build tool and dev server |
+| **Material-UI (MUI)** | 5.x | Component library |
+| **Axios** | 1.6.x | HTTP client for API calls |
+| **React Router** | 6.x | Client-side routing |
+| **CSS** | 3.x | Styling |
+| **JavaScript** | ES6+ | Programming language |
 
-# Pull latest changes
-codevault pull
+### Backend
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| **Node.js** | 14+ | JavaScript runtime |
+| **Express.js** | 4.x | Web framework |
+| **MongoDB** | 5.x+ | NoSQL database |
+| **Mongoose** | 7.x+ | ODM for MongoDB |
+| **JWT** | - | Authentication |
+| **bcryptjs** | 2.x | Password hashing |
+| **AWS SDK** | 2.x | S3 integration |
 
-# Revert to previous commit
-codevault revert commitId
+### CLI Package
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| **Node.js** | 14+ | JavaScript runtime |
+| **Axios** | 1.6.x | HTTP client |
+| **Inquirer** | 8.x | Interactive CLI prompts |
+| **Yargs** | 17.x | Command-line argument parser |
+| **UUID** | 9.x | Unique identifier generation |
+| **Form-data** | 4.x | Multipart form data handling |
 
-# User authentication
-codevault login
-```
-
-### 🔧 Core Functionality
-- **Version Control**: Track file changes with commit history
-- **Branching Simulation**: Basic branching concepts for beginners
-- **Remote Repositories**: Push/pull operations to cloud storage
-- **Collaboration**: Multi-user support with access permissions
-- **File Management**: Upload, download, and organize project files
-- **Backup & Restore**: Revert to any previous commit state
+### Deployment
+| Service | Purpose |
+|---------|---------|
+| **Render** | Backend deployment (https://codevault-pumm.onrender.com) |
+| **Vercel/Netlify** | Frontend deployment (https://code-vault-plum.vercel.app/) |
+| **MongoDB Atlas** | Cloud MongoDB database |
+| **AWS S3** | File storage |
 
 ---
 
 ## 🏗️ Architecture
 
-CodeVault follows a **modern full-stack architecture**:
-
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Frontend (React + Vite)                │
-├─────────────────────────────────────────────────────────────┤
-│  • Material UI Components    • Real-time Terminal          │
-│  • Repository Dashboard      • Interactive Git Commands    │
-│  • Authentication System     • Issue Management            │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │    REST API       │
-                    │  (Express.js)     │
-                    └─────────┬─────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │    Database       │
-                    │   (MongoDB)       │
-                    └───────────────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │   File Storage    │
-                    │    (AWS S3)       │
-                    └───────────────────┘
+CodeVault
+│
+├── Frontend (React + Vite)
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── auth/ (Login, Signup)
+│   │   │   ├── repo/ (Repository operations)
+│   │   │   ├── dashboard/ (Dashboard view)
+│   │   │   └── user/ (User profile)
+│   │   ├── pages/
+│   │   ├── api.js (API client)
+│   │   └── authContext.jsx (Auth state management)
+│   └── package.json
+│
+├── Backend (Express.js + MongoDB)
+│   ├── routes/
+│   │   ├── user.router.js
+│   │   ├── repo.router.js
+│   │   └── issue.router.js
+│   ├── controllers/
+│   │   ├── userController.js
+│   │   ├── repoController.js
+│   │   └── issueController.js
+│   ├── models/
+│   │   ├── userModel.js
+│   │   ├── repoModel.js
+│   │   └── issueModel.js
+│   ├── middleware/
+│   │   ├── authMiddleware.js
+│   │   └── authorizeMiddleware.js
+│   ├── config/
+│   │   └── aws-config.js
+│   ├── vcs/ (Version control logic)
+│   │   ├── add.js
+│   │   ├── commit.js
+│   │   ├── push.js
+│   │   ├── pull.js
+│   │   ├── init.js
+│   │   └── revert.js
+│   ├── server.js (Entry point)
+│   └── package.json
+│
+└── CLI Package (@amaanslyf/codevault-cli)
+    ├── bin/
+    │   └── codevault.js
+    ├── lib/
+    │   ├── config.js
+    │   ├── api.js
+    │   ├── commands/
+    │   │   ├── login.js
+    │   │   ├── init.js
+    │   │   ├── add.js
+    │   │   ├── commit.js
+    │   │   ├── push.js
+    │   │   ├── pull.js
+    │   │   └── revert.js
+    │   └── utils/
+    │       └── logger.js
+    └── package.json
 ```
-
-### Tech Stack
-
-**Backend:**
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **MongoDB** - Document database
-- **Mongoose** - ODM for MongoDB
-- **Socket.io** - Real-time communication
-- **AWS S3** - Cloud file storage
-- **JWT** - Authentication tokens
-- **Bcrypt** - Password hashing
-
-**Frontend:**
-- **React 19** - UI library
-- **Vite** - Build tool and dev server
-- **Material UI** - Component library
-- **React Router** - Client-side routing
-- **Axios** - HTTP client
-- **Context API** - State management
-
-**CLI Tools:**
-- **Yargs** - Command-line argument parsing
-- **Inquirer** - Interactive command prompts
-- **Form-data** - File upload handling
 
 ---
 
-## 📋 Prerequisites
+## 📦 Installation & Setup
 
-Before installing CodeVault, ensure you have:
+### Prerequisites
+- **Node.js** v14 or higher
+- **npm** v6 or higher
+- **MongoDB** (local or MongoDB Atlas)
+- **AWS S3 Bucket** with credentials
+- **Git** (for version control)
 
-- **Node.js** v18 or higher
-- **MongoDB** (local installation or MongoDB Atlas)
-- **AWS Account** (for S3 file storage)
-- **Git** (for cloning the repository)
+### Step 1: Clone or Download the Project
 
----
-
-## 🚀 Installation
-
-### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/codevault.git
-cd codevault
+git clone https://github.com/your-username/CodeVault.git
+cd CodeVault
 ```
 
-### 2. Backend Setup
+### Step 2: Backend Setup
+
 ```bash
-# Navigate to backend directory
+# Navigate to backend folder
 cd backend
 
 # Install dependencies
 npm install
 
-# Create environment file
-cp .env.example .env
-```
-
-**Configure your `.env` file:**
-```env
-# Database Configuration
-MONGODB_URI=mongodb://localhost:27017/codevault
-
-# Server Configuration
+# Create .env file
+cat > .env << EOF
 PORT=3000
-NODE_ENV=development
+MONGODB_URI=your-mongodb-connection-string
+JWT_SECRET=your-secret-key-make-it-long-and-random
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_REGION=ap-south-1
+S3_BUCKET_NAME=your-s3-bucket-name
+EOF
 
-# JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-
-# AWS S3 Configuration
-AWS_ACCESS_KEY_ID=your-aws-access-key-id
-AWS_SECRET_ACCESS_KEY=your-aws-secret-access-key
-AWS_REGION=us-east-1
-S3_BUCKET_NAME=codevault-files
+# Start backend server
+npm start
+# Server runs on http://localhost:3000
 ```
 
-### 3. Frontend Setup
+### Step 3: Frontend Setup
+
 ```bash
-# Navigate to frontend directory (in a new terminal)
-cd frontend
+# Navigate to frontend folder
+cd ../frontend
 
 # Install dependencies
 npm install
 
-# Create environment file (optional)
-echo "VITE_APP_API_URL=http://localhost:3000" > .env
+# Create .env file
+cat > .env << EOF
+VITE_APP_API_URL=http://localhost:3000
+EOF
+
+# Start development server
+npm run dev
+# Frontend runs on http://localhost:5173
 ```
 
-### 4. Database Setup
-Make sure MongoDB is running:
-```bash
-# For local MongoDB
-mongod
+### Step 4: CLI Package Setup (Optional)
 
-# Or using MongoDB service (Linux/Mac)
-sudo service mongod start
+```bash
+# Navigate to CLI folder
+cd ../codevault-cli
+
+# Install dependencies
+npm install
+
+# Link locally for testing
+npm link
+
+# Test
+codevault --help
 ```
 
 ---
 
-## 🎯 Usage
+## 🚀 Running Locally
 
-### Starting the Application
+### Full Local Development
 
-1. **Start the Backend Server:**
+#### Terminal 1 - Backend:
 ```bash
 cd backend
 npm start
 ```
-The server will start on `http://localhost:3000`
 
-2. **Start the Frontend Development Server:**
+Expected output:
+```
+MongoDB connected successfully
+Server running on port 3000
+```
+
+#### Terminal 2 - Frontend:
 ```bash
 cd frontend
 npm run dev
 ```
-The frontend will be available at `http://localhost:5173`
 
-### Using the Web Interface
+Expected output:
+```
+  VITE v5.x.x  ready in xxx ms
 
-1. **Create an Account**: Visit `http://localhost:5173/signup`
-2. **Login**: Navigate to `http://localhost:5173/login`
-3. **Create Repository**: Click "Create Repository" on the dashboard
-4. **Upload Files**: Use the web interface to upload and manage files
-5. **View Commits**: Explore the commit history and file changes
-6. **Manage Issues**: Create and track project issues
-
-### Using the Command Line
-
-1. **Install CLI globally** (optional):
-```bash
-cd backend
-npm link
+  ➜  Local:   http://localhost:5173/
+  ➜  Press q to quit
 ```
 
-2. **Login to your account:**
+#### Terminal 3 - CLI (Optional):
 ```bash
+cd codevault-cli
 codevault login
 ```
 
-3. **Initialize a new repository:**
-```bash
-mkdir my-project
-cd my-project
-codevault init
+### Access Application
+- **Web App**: http://localhost:5173
+- **Backend API**: http://localhost:3000
+- **API Docs**: http://localhost:3000 (routes available)
+
+---
+
+## 🌐 Deployed Application
+
+### Live URLs
+- **Web Application**: https://code-vault-plum.vercel.app/
+- **Backend API**: https://codevault-pumm.onrender.com (same URL)
+
+### Using the Deployed Application
+
+1. **Visit**: https://code-vault-plum.vercel.app/
+2. **Sign Up**: Create a new account
+3. **Login**: Login with your credentials
+4. **Create Repository**: Start creating and managing repositories
+5. **Use CLI**: Developers can use the CLI tool pointing to this deployed backend
+
+### Frontend Pointing to Deployed Backend
+
+Update `frontend/.env`:
+```env
+VITE_APP_API_URL=https://codevault-pumm.onrender.com
 ```
 
-4. **Add and commit files:**
+Then run:
 ```bash
-echo "Hello World" > hello.txt
-codevault add hello.txt
-codevault commit "Add hello world file"
-```
-
-5. **Push to remote:**
-```bash
-codevault push
+npm run dev
 ```
 
 ---
 
-## 📚 API Documentation
+## 💻 CLI Usage
 
-### Authentication Endpoints
-```
-POST   /signup              - Create new user account
-POST   /login               - User authentication
-GET    /me                  - Get current user profile
-PUT    /updateProfile/:id   - Update user profile
-DELETE /deleteProfile/:id   - Delete user account
+### Installation
+
+```bash
+npm install -g @amaanslyf/codevault-cli
 ```
 
-### Repository Endpoints
-```
-GET    /repo/all            - Get all repositories
-GET    /repo/public         - Get public repositories
-GET    /repo/user/:userId   - Get user's repositories
-GET    /repo/viewrepo/:id   - Get repository details
-POST   /repo/create         - Create new repository
-PUT    /repo/update/:id     - Update repository
-PUT    /repo/toggle/:id     - Toggle repository visibility
-DELETE /repo/delete/:id     - Delete repository
-POST   /repo/push/:id       - Push files to repository
-GET    /repo/pull/:id       - Pull repository data
+### Commands
+
+#### 1. Login
+```bash
+codevault login
+# Enter email and password
+# Token saved to ~/.codevault/config.json
 ```
 
-### Issue Management Endpoints
+#### 2. Initialize Repository
+```bash
+cd my-project
+codevault init
+# Creates .codevault folder
 ```
-GET    /issue/all/:repoId   - Get all issues for repository
-GET    /issue/:id           - Get specific issue
-POST   /issue/create/:repoId - Create new issue
-PUT    /issue/update/:id    - Update issue
-DELETE /issue/delete/:id    - Delete issue
+
+#### 3. Add Files
+```bash
+# Add single file
+codevault add filename.txt
+
+# Add all files
+codevault add .
+```
+
+#### 4. Commit
+```bash
+codevault commit -m "Your commit message"
+```
+
+#### 5. Push
+```bash
+codevault push
+# Uploads commits to server
+```
+
+#### 6. Pull
+```bash
+codevault pull
+# Downloads commits from server
+```
+
+#### 7. Revert
+```bash
+codevault revert commit-id
+# Reverts to specific commit
+```
+
+### Example Workflow
+```bash
+# Login
+codevault login
+
+# Create project folder
+mkdir my-vcs-project
+cd my-vcs-project
+
+# Initialize
+codevault init
+
+# Create and add files
+echo "Hello World" > app.js
+codevault add .
+
+# Commit
+codevault commit -m "Initial commit"
+
+# Push to server
+codevault push
+
+# View on web at https://code-vault-plum.vercel.app/
 ```
 
 ---
 
 ## 📁 Project Structure
 
+### Backend Structure
 ```
-codevault/
-├── backend/
-│   ├── controllers/         # Request handlers
-│   │   ├── userController.js
-│   │   ├── repoController.js
-│   │   ├── issueController.js
-│   │   ├── login.js         # CLI login handler
-│   │   ├── init.js          # Repository initialization
-│   │   ├── add.js           # File staging
-│   │   ├── commit.js        # Commit creation
-│   │   ├── push.js          # Push to remote
-│   │   └── pull.js          # Pull from remote
-│   ├── models/              # Database schemas
-│   │   ├── userModel.js
-│   │   ├── repoModel.js
-│   │   └── issueModel.js
-│   ├── routes/              # API routes
-│   │   ├── main.router.js
-│   │   ├── user.router.js
-│   │   ├── repo.router.js
-│   │   └── issue.router.js
-│   ├── middleware/          # Custom middleware
-│   │   ├── authMiddleware.js
-│   │   └── authorizeMiddleware.js
-│   ├── config/              # Configuration files
-│   │   └── aws-config.js
-│   ├── index.js            # CLI entry point
-│   ├── server.js           # Server configuration
-│   └── package.json
-│
-└── frontend/
-    ├── src/
-    │   ├── components/      # React components
-    │   │   ├── auth/        # Authentication components
-    │   │   ├── dashboard/   # Dashboard components
-    │   │   ├── repo/        # Repository components
-    │   │   ├── user/        # User profile components
-    │   │   └── terminal/    # Terminal interface
-    │   ├── theme/           # Material UI theme
-    │   ├── authContext.jsx  # Authentication context
-    │   ├── api.js          # API client
-    │   ├── Routes.jsx      # Route configuration
-    │   ├── Layout.jsx      # App layout
-    │   └── main.jsx        # App entry point
-    ├── public/             # Static assets
-    └── package.json
+backend/
+├── routes/
+│   ├── user.router.js       # User authentication routes
+│   ├── repo.router.js       # Repository CRUD routes
+│   ├── issue.router.js      # Issue management routes
+│   └── main.router.js       # Main router
+├── controllers/
+│   ├── userController.js    # User logic
+│   ├── repoController.js    # Repository logic
+│   └── issueController.js   # Issue logic
+├── models/
+│   ├── userModel.js         # User schema
+│   ├── repoModel.js         # Repository schema
+│   └── issueModel.js        # Issue schema
+├── middleware/
+│   ├── authMiddleware.js    # JWT verification
+│   └── authorizeMiddleware.js # Permission checks
+├── vcs/
+│   ├── add.js               # Stage files
+│   ├── commit.js            # Create commits
+│   ├── push.js              # Upload commits
+│   ├── pull.js              # Download commits
+│   ├── init.js              # Initialize repo
+│   └── revert.js            # Revert commits
+├── config/
+│   └── aws-config.js        # AWS S3 configuration
+├── server.js                # Express app entry
+├── index.js                 # Server starter
+└── package.json
 ```
 
----
-
-## 🔧 Configuration
-
-### Environment Variables
-
-**Backend (.env)**:
-- `MONGODB_URI` - Database connection string
-- `PORT` - Server port (default: 3000)
-- `JWT_SECRET` - Secret key for JWT tokens
-- `AWS_ACCESS_KEY_ID` - AWS access key
-- `AWS_SECRET_ACCESS_KEY` - AWS secret key
-- `AWS_REGION` - AWS region
-- `S3_BUCKET_NAME` - S3 bucket name
-
-**Frontend (.env)** (optional):
-- `VITE_APP_API_URL` - Backend API URL
-
-### AWS S3 Setup
-1. Create an AWS account and S3 bucket
-2. Set up IAM user with S3 permissions
-3. Configure bucket CORS policy:
-```json
-[
-  {
-    "AllowedHeaders": ["*"],
-    "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
-    "AllowedOrigins": ["*"],
-    "ExposeHeaders": []
-  }
-]
+### Frontend Structure
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── auth/
+│   │   │   ├── Login.jsx
+│   │   │   └── Signup.jsx
+│   │   ├── repo/
+│   │   │   ├── CreateRepo.jsx
+│   │   │   ├── ViewRepo.jsx
+│   │   │   ├── CommitHistory.jsx
+│   │   │   ├── FileList.jsx
+│   │   │   └── CreateIssue.jsx
+│   │   ├── dashboard/
+│   │   │   └── Dashboard.jsx
+│   │   ├── user/
+│   │   │   └── Profile.jsx
+│   │   ├── Navbar.jsx
+│   │   └── Layout.jsx
+│   ├── api.js               # Axios configuration
+│   ├── authContext.jsx      # Auth state
+│   ├── Routes.jsx           # Route definitions
+│   ├── App.jsx              # Main app
+│   ├── main.jsx             # Entry point
+│   └── index.css
+├── index.html
+├── vite.config.js
+└── package.json
 ```
 
 ---
 
-## 🚀 Development
+## 🔌 API Endpoints
 
-### Running in Development Mode
+### Authentication
+```
+POST   /login              # Login user
+POST   /signup             # Register user
+GET    /me                 # Get current user
+PUT    /updateProfile/:id  # Update profile
+DELETE /deleteProfile/:id  # Delete account
+```
 
-**Backend with auto-reload:**
+### Repository
+```
+POST   /repo/create              # Create repository
+GET    /repo/all                 # Get all repositories
+GET    /repo/public              # Get public repositories
+GET    /repo/:id                 # Get repository by ID
+GET    /repo/user/:userId        # Get user's repositories
+PUT    /repo/:id                 # Update repository
+PATCH  /repo/toggle/:id          # Toggle visibility
+DELETE /repo/delete/:id          # Delete repository
+POST   /repo/push/:id            # Push commits
+GET    /repo/pull/:id            # Pull commits
+```
+
+### Issues
+```
+POST   /issue/create/:repoId     # Create issue
+GET    /issue/all/:repoId        # Get all issues for repo
+PUT    /issue/:id                # Update issue
+DELETE /issue/:id                # Delete issue
+```
+
+---
+
+## 🔧 Environment Variables
+
+### Backend (.env)
+```env
+# Server
+PORT=3000
+
+# Database
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/codevault
+
+# Authentication
+JWT_SECRET=your-super-secret-jwt-key-make-it-very-long-and-random
+
+# AWS S3
+AWS_ACCESS_KEY_ID=your-aws-access-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_REGION=ap-south-1
+S3_BUCKET_NAME=codevault-storage
+
+# Frontend URL (for CORS)
+FRONTEND_URL=http://localhost:5173
+```
+
+### Frontend (.env)
+```env
+VITE_APP_API_URL=http://localhost:3000
+# or for deployed:
+VITE_APP_API_URL=https://codevault-pumm.onrender.com
+```
+
+### CLI (.env)
+```env
+CODEVAULT_API_URL=http://localhost:3000
+# or for deployed:
+CODEVAULT_API_URL=https://codevault-pumm.onrender.com
+```
+
+---
+
+## 📊 Database Schema
+
+### User Model
+```javascript
+{
+  _id: ObjectId,
+  username: String (unique, required),
+  email: String (unique, required),
+  password: String (hashed),
+  repositories: [ObjectId],
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### Repository Model
+```javascript
+{
+  _id: ObjectId,
+  name: String (unique, required),
+  description: String,
+  owner: ObjectId (User),
+  visibility: Boolean (true=public, false=private),
+  commits: [{
+    commitId: String,
+    message: String,
+    timestamp: Date,
+    author: ObjectId
+  }],
+  issues: [ObjectId],
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### Issue Model
+```javascript
+{
+  _id: ObjectId,
+  title: String (required),
+  description: String,
+  status: String (open/closed),
+  repository: ObjectId,
+  creator: ObjectId (User),
+  assignee: ObjectId (User),
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Issue: Backend won't start
+**Solution:**
 ```bash
-cd backend
-npm install -g nodemon
-nodemon index.js start
+# Check if port 3000 is in use
+lsof -i :3000  # macOS/Linux
+netstat -ano | findstr :3000  # Windows
+
+# Kill process or use different port
 ```
 
-**Frontend with hot reload:**
-```bash
-cd frontend
-npm run dev
-```
+### Issue: MongoDB connection error
+**Solution:**
+- Verify MongoDB is running locally or check connection string for MongoDB Atlas
+- Ensure firewall allows MongoDB connections
+- Check IP whitelist in MongoDB Atlas
 
-### Building for Production
+### Issue: AWS S3 errors
+**Solution:**
+- Verify AWS credentials are correct
+- Check S3 bucket exists and is accessible
+- Ensure IAM user has S3 permissions
 
-**Frontend build:**
-```bash
-cd frontend
-npm run build
-```
+### Issue: Frontend can't connect to backend
+**Solution:**
+- Check backend is running on correct port
+- Update `.env` with correct API URL
+- Clear browser cache
+- Check CORS settings in backend
 
-**Serve frontend build:**
-```bash
-npm run preview
-```
+### Issue: Login fails on CLI
+**Solution:**
+- Ensure backend is running
+- Verify credentials are correct
+- Check API URL in `lib/config.js`
+- Account must exist (signup on web first)
+
+### Issue: Duplicate commits appearing
+**Solution:**
+- This has been fixed in the latest version
+- Ensure repoController.js has the duplicate check
+- Clear commits folder: `rm -rf .codevault/commits/*`
 
 ---
 
-## 🧪 Testing
+## 📈 Performance Optimization
 
-Currently, CodeVault includes basic testing setup. To run tests:
-
-```bash
-# Backend tests
-cd backend
-npm test
-
-# Frontend tests  
-cd frontend
-npm test
-```
+- **Frontend**: Vite for fast build times and HMR
+- **Backend**: Express middleware for efficient request handling
+- **Database**: MongoDB indexes on frequently queried fields
+- **Storage**: AWS S3 for scalable file storage
+- **Caching**: JWT tokens for reduced database queries
 
 ---
 
-## 🤝 Contributing
+## 🔐 Security Features
 
-We welcome contributions! Here's how you can help:
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Make your changes** and test thoroughly
-4. **Commit your changes**: `git commit -m 'Add amazing feature'`
-5. **Push to the branch**: `git push origin feature/amazing-feature`
-6. **Open a Pull Request**
-
-### Development Guidelines
-- Follow existing code style and conventions
-- Add comments for complex logic
-- Update documentation for new features
-- Test your changes before submitting
-- Use meaningful commit messages
+- ✅ **JWT Authentication**: Secure token-based authentication
+- ✅ **Password Hashing**: bcryptjs for secure password storage
+- ✅ **Access Control**: Private repositories protected
+- ✅ **Authorization Middleware**: Verify user permissions
+- ✅ **CORS**: Restrict API access to authorized domains
+- ✅ **Environment Variables**: Sensitive data not hardcoded
 
 ---
 
-## 📝 License
+## 🚀 Deployment Guide
 
-This project is licensed under the **ISC License** - see the [LICENSE](LICENSE) file for details.
+### Deploy Backend on Render
 
----
+1. Push code to GitHub
+2. Go to https://render.com
+3. Create new Web Service
+4. Connect GitHub repository
+5. Set environment variables
+6. Deploy
 
-## 🔄 Changelog
+### Deploy Frontend on Vercel
 
-### v1.0.0 (Current)
-- ✅ Complete web interface with Material UI
-- ✅ Git-like CLI commands implementation
-- ✅ Repository management with file uploads
-- ✅ User authentication and profiles
-- ✅ Issue tracking system
-- ✅ Real-time terminal interface
-- ✅ AWS S3 integration
-- ✅ Responsive design
-
-### Upcoming Features
-- 🔄 Docker containerization
-- 🔄 Enhanced branching support
-- 🔄 Collaborative editing
-- 🔄 Advanced search and filtering
-- 🔄 Repository templates
-- 🔄 Integration with external Git providers
+1. Push code to GitHub
+2. Go to https://vercel.com
+3. Import project
+4. Set environment variable: `VITE_APP_API_URL=deployed-backend-url`
+5. Deploy
 
 ---
 
-<div align="center">
+## 📝 Future Enhancements
 
-**Made with ❤️ by [Abdulshakkur Shaikh](https://github.com/yourusername)**
+- [ ] Diff viewer for file changes
+- [ ] Branch support
+- [ ] Merge functionality
+- [ ] Collaboration features
+- [ ] Webhook integration
+- [ ] Docker support
+- [ ] Mobile app
+- [ ] Real-time collaboration
+- [ ] Advanced permission system
 
-[![GitHub Stars](https://img.shields.io/github/stars/yourusername/codevault?style=social)](https://github.com/yourusername/codevault)
-[![GitHub Forks](https://img.shields.io/github/forks/yourusername/codevault?style=social)](https://github.com/yourusername/codevault)
+---
 
-</div>
+## 👥 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the ISC License.
+
+---
+
+## 👨‍💻 Author
+
+**Your Name**
+- GitHub: [@amaanslyf](https://github.com/amaanslyf)
+
+---
+
+
+## 🙏 Acknowledgments
+
+- Material-UI for excellent component library
+- Render for deployment
+- MongoDB for database
+- AWS for cloud storage
+- Express.js community
+
+---
+
+## 📚 Additional Resources
+
+- [React Documentation](https://react.dev)
+- [Express.js Guide](https://expressjs.com)
+- [MongoDB Documentation](https://docs.mongodb.com)
+- [Material-UI Docs](https://mui.com)
+- [Git Basics](https://git-scm.com/book/en/v2)
+
+---
+
+**Last Updated**: October 31, 2025
+**Version**: 1.0.0
