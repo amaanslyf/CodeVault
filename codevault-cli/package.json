@@ -1,5 +1,5 @@
 {
-  "name": "codevault-cli",
+  "name": "@amaanslyf/codevault-cli",
   "version": "1.0.0",
   "description": "A beginner-friendly version control system CLI",
   "main": "bin/codevault.js",
@@ -30,3 +30,8 @@
     "yargs": "^17.7.0"
   }
 }
+
+ 
+ 
+
+  
